@@ -4,110 +4,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recherche Google Maps - Téléchargement Excel</title>
+    <title>StudioScraper Pro | Extraction Google Maps</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --success: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --box-shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', 'Inter', -apple-system, system-ui, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 30px;
+            color: var(--dark);
+            line-height: 1.6;
         }
 
         .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             width: 100%;
-            max-width: 500px;
-            padding: 40px;
+            max-width: 520px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 30px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
         }
 
         h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
         }
 
         .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 16px;
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: var(--light);
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            color: var(--primary);
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(67, 97, 238, 0.15);
+            transition: var(--transition);
+        }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--gray);
+        }
+
+        .status-dot.active {
+            background: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 35px;
+        }
+
+        .form-card {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+
+        .form-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--dark);
+        }
+
+        .form-title i {
+            color: var(--primary);
+            font-size: 1.4rem;
         }
 
         .form-group {
-            margin-bottom: 20px;
-            text-align: left;
+            margin-bottom: 25px;
         }
 
-        label {
+        .form-label {
             display: block;
-            margin-bottom: 8px;
-            color: #555;
+            margin-bottom: 10px;
             font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
         }
 
-        input {
+        .form-control {
             width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            padding: 16px 20px;
+            border: 2px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
         }
 
-        input:focus {
+        .form-control:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
         }
 
-        .search-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .form-control::placeholder {
+            color: #adb5bd;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-size: 18px;
+            padding: 18px;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
-            width: 100%;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 10px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
         }
 
-        .search-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4);
         }
 
-        .search-btn:disabled {
-            opacity: 0.6;
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
             cursor: not-allowed;
             transform: none !important;
         }
 
+        /* Loading State */
         .loading {
+            text-align: center;
+            padding: 40px 20px;
             display: none;
-            margin: 30px 0;
         }
 
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--light-gray);
+            border-top: 4px solid var(--primary);
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            margin: 0 auto 25px;
+            animation: spin 1.2s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
         }
 
         @keyframes spin {
@@ -120,120 +277,28 @@
             }
         }
 
+        .loading-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .loading-subtitle {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        /* Results */
         .result-container {
             display: none;
-            margin-top: 30px;
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
+            animation: fadeIn 0.5s ease;
         }
 
-        .download-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin: 25px 0;
-            flex-wrap: wrap;
-        }
-
-        .download-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: white;
-            border: 2px solid;
-            border-radius: 10px;
-            padding: 15px 25px;
-            text-decoration: none;
-            color: #333;
-            font-weight: 600;
-            transition: all 0.3s;
-            min-width: 180px;
-            justify-content: center;
-        }
-
-        .download-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .download-btn.excel {
-            border-color: #217346;
-            color: #217346;
-        }
-
-        .download-btn.csv {
-            border-color: #1d6f8a;
-            color: #1d6f8a;
-        }
-
-        .download-btn.view {
-            border-color: #667eea;
-            color: #667eea;
-        }
-
-        .icon {
-            font-size: 24px;
-        }
-
-        .error-message {
-            color: #e74c3c;
-            background: #fde8e8;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            display: none;
-            text-align: left;
-        }
-
-        .success-message {
-            color: #27ae60;
-            background: #e8f8ef;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-
-        .result-info {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            text-align: left;
-            border-left: 4px solid #667eea;
-        }
-
-        /* Modal Popup */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            max-width: 500px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: modalAppear 0.3s ease;
-        }
-
-        @keyframes modalAppear {
+        @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(-20px);
+                transform: translateY(10px);
             }
 
             to {
@@ -242,154 +307,527 @@
             }
         }
 
-        .modal-buttons {
+        .success-card {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 5px solid #28a745;
             display: flex;
+            align-items: center;
             gap: 15px;
-            justify-content: center;
-            margin: 30px 0;
-            flex-wrap: wrap;
         }
 
-        .modal-btn {
-            display: inline-flex;
+        .success-icon {
+            font-size: 2.2rem;
+            color: #28a745;
+        }
+
+        .success-content h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #155724;
+        }
+
+        .success-content p {
+            color: #0f5132;
+            font-size: 0.95rem;
+        }
+
+        .result-info {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid var(--light-gray);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+        }
+
+        .result-info h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark);
+            display: flex;
             align-items: center;
             gap: 10px;
-            padding: 15px 25px;
-            border: 2px solid;
-            border-radius: 10px;
-            background: white;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s;
-            min-width: 180px;
-            justify-content: center;
         }
 
-        .modal-btn.excel {
-            border-color: #217346;
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        /* Download Buttons */
+        .download-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .download-section h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .download-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .download-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            color: var(--dark);
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid transparent;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow-hover);
+            border-color: var(--primary);
+        }
+
+        .download-btn i {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .btn-excel i {
             color: #217346;
         }
 
-        .modal-btn.csv {
-            border-color: #1d6f8a;
+        .btn-csv i {
             color: #1d6f8a;
         }
 
-        .modal-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        .btn-view i {
+            color: var(--primary);
         }
 
-        .close-btn {
-            margin-top: 20px;
-            padding: 10px 25px;
-            background: #f0f0f0;
-            border: none;
-            border-radius: 5px;
+        .download-btn span:first-of-type {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .download-btn span:last-of-type {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        /* Error Message */
+        .error-message {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 5px solid #dc3545;
+            display: none;
+        }
+
+        .error-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .error-header i {
+            font-size: 1.5rem;
+            color: #dc3545;
+        }
+
+        .error-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #721c24;
+        }
+
+        .error-content {
+            color: #721c24;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .error-content a {
+            color: #721c24;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            animation: modalSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-header i {
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .modal-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .modal-header p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .modal-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .modal-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 25px 15px;
+            background: white;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            color: var(--dark);
+            transition: var(--transition);
+            border: 2px solid var(--light-gray);
             cursor: pointer;
-            font-size: 14px;
-            transition: background 0.3s;
         }
 
-        .close-btn:hover {
-            background: #e0e0e0;
+        .modal-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-btn i {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+        }
+
+        .modal-btn-excel i {
+            color: #217346;
+        }
+
+        .modal-btn-csv i {
+            color: #1d6f8a;
+        }
+
+        .modal-btn span:first-of-type {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .modal-btn span:last-of-type {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .modal-footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .modal-footer p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .btn-close {
+            background: var(--light);
+            color: var(--dark);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-close:hover {
+            background: var(--light-gray);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 25px 30px;
+            text-align: center;
+            background: var(--light);
+            border-top: 1px solid var(--light-gray);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 576px) {
+            .container {
+                border-radius: 15px;
+            }
+
+            .header,
+            .main-content {
+                padding: 25px;
+            }
+
+            .form-card {
+                padding: 25px;
+            }
+
+            .download-buttons,
+            .modal-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
 <body>
-
     <div class="container">
-        <div class="redirection" style="display: flex; ">
-        <a href="index.html" style="color:black; font-weight: bold; font-size: 13px; text-decoration: none;    background-color: #ededed;
-    height: 6vh;
-    width: 9vw;
-    border-radius: 12px;
-    display: flex;
-    /* align-content: space-between; */
-    justify-content: space-around;
-    align-items: center;">aller vers Accueil</a>
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-map-marked-alt logo-icon"></i>
+                <div>
+                    <h1>StudioScraper Pro</h1>
+                    <p class="subtitle">Extraction avancée de données Google Maps</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav">
+            <a href="index.html" class="home-btn">
+                <i class="fas fa-home"></i>
+                Retour à l'accueil
+            </a>
+            <div class="status-indicator">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">Connexion proxy...</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Form Card -->
+            <div class="form-card">
+                <div class="form-title">
+                    <i class="fas fa-search"></i>
+                    Paramètres de recherche
+                </div>
+
+                <div class="form-group">
+                    <label for="keyword" class="form-label">
+                        <i class="fas fa-hashtag"></i> Terme de recherche
+                    </label>
+                    <input type="text" id="keyword" class="form-control"
+                        placeholder="Ex: studio photographie, restaurant, café..." value="studio photographie">
+                </div>
+
+                <div class="form-group">
+                    <label for="city" class="form-label">
+                        <i class="fas fa-map-marker-alt"></i> Ville
+                    </label>
+                    <input type="text" id="city" class="form-control" placeholder="Ex: Casablanca, Rabat, Marrakech..."
+                        value="Casablanca">
+                </div>
+
+                <button class="btn-primary" onclick="startSearch()" id="searchBtn">
+                    <i class="fas fa-play-circle"></i>
+                    Lancer l'extraction
+                </button>
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <div class="loading-title">Extraction en cours</div>
+                <div class="loading-subtitle">Analyse de Google Maps en temps réel...</div>
+            </div>
+
+            <!-- Error Message -->
+            <div class="error-message" id="error-message">
+                <div class="error-header">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Erreur d'extraction</h3>
+                </div>
+                <div class="error-content" id="error-content"></div>
+            </div>
+
+            <!-- Results Container -->
+            <div class="result-container" id="result-container">
+                <!-- Success Card -->
+                <div class="success-card">
+                    <i class="fas fa-check-circle success-icon"></i>
+                    <div class="success-content">
+                        <h3>Extraction terminée avec succès</h3>
+                        <p>Les données ont été collectées et traitées</p>
+                    </div>
+                </div>
+
+                <!-- Result Info -->
+                <div class="result-info">
+                    <h4><i class="fas fa-chart-bar"></i> Résultats de l'extraction</h4>
+                    <div id="result-info-content">
+                        <!-- Results will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Download Section -->
+                <div class="download-section">
+                    <h4><i class="fas fa-download"></i> Télécharger les données</h4>
+                    <div class="download-buttons">
+                        <a href="#" id="excel-link" class="download-btn btn-excel" target="_blank">
+                            <i class="fas fa-file-excel"></i>
+                            <span>Excel</span>
+                            <span>Format .xlsx</span>
+                        </a>
+
+                        <a href="#" id="csv-link" class="download-btn btn-csv" target="_blank">
+                            <i class="fas fa-file-csv"></i>
+                            <span>CSV</span>
+                            <span>Format .csv</span>
+                        </a>
+
+                        <a href="#" id="view-link" class="download-btn btn-view" target="_blank">
+                            <i class="fas fa-eye"></i>
+                            <span>Voir en ligne</span>
+                            <span>Prévisualisation</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2025 StudioScraper Pro • <a href="#">Politique de confidentialité</a> • <a href="#">Conditions
+                    d'utilisation</a></p>
+        </div>
     </div>
-        <h1>🔍 Recherche Google Maps</h1>
-        <p class="subtitle">Trouvez des entreprises et téléchargez les résultats</p>
 
-        <div class="form-group">
-            <label for="keyword">Terme de recherche :</label>
-            <input type="text" id="keyword" placeholder="Ex: studio photographie, restaurant, café..."
-                value="studio photographie">
-        </div>
-
-        <div class="form-group">
-            <label for="city">Ville :</label>
-            <input type="text" id="city" placeholder="Ex: Casablanca, Rabat, Marrakech..." value="Casablanca">
-        </div>
-
-        <button class="search-btn" onclick="startSearch()">Lancer la recherche et générer Excel</button>
-
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Recherche en cours sur Google Maps...</p>
-            <p style="font-size: 14px; color: #666;">Cela peut prendre quelques secondes</p>
-        </div>
-
-        <div class="error-message" id="error-message"></div>
-
-        <div class="result-container" id="result-container">
-            <div class="success-message">
-                ✅ Recherche terminée avec succès !
-            </div>
-
-            <div id="result-info" class="result-info">
-                <!-- Les informations des résultats apparaîtront ici -->
-            </div>
-
-            <div class="download-buttons">
-                <a href="#" id="excel-link" class="download-btn excel" target="_blank">
-                    <span class="icon">📊</span>
-                    <span>Télécharger Excel</span>
-                </a>
-
-                <a href="#" id="csv-link" class="download-btn csv" target="_blank">
-                    <span class="icon">📈</span>
-                    <span>Télécharger CSV</span>
-                </a>
-
-                <a href="#" id="view-link" class="download-btn view" target="_blank">
-                    <span class="icon">👁️</span>
-                    <span>Voir en ligne</span>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Popup -->
+    <!-- Modal -->
     <div id="downloadModal" class="modal">
         <div class="modal-content">
-            <h2>📥 Téléchargement prêt !</h2>
-            <p>Sélectionnez le format de téléchargement :</p>
+            <div class="modal-header">
+                <i class="fas fa-file-download"></i>
+                <h2>Téléchargement disponible</h2>
+                <p>Sélectionnez le format de fichier souhaité</p>
+            </div>
 
             <div class="modal-buttons">
-                <a href="#" id="modal-excel" class="modal-btn excel" target="_blank">
-                    <span class="icon">📊</span>
-                    <span>Excel (.xlsx)</span>
+                <a href="#" id="modal-excel" class="modal-btn modal-btn-excel" target="_blank">
+                    <i class="fas fa-file-excel"></i>
+                    <span>Excel</span>
+                    <span>XLSX - Tableur</span>
                 </a>
 
-                <a href="#" id="modal-csv" class="modal-btn csv" target="_blank">
-                    <span class="icon">📈</span>
-                    <span>CSV (.csv)</span>
+                <a href="#" id="modal-csv" class="modal-btn modal-btn-csv" target="_blank">
+                    <i class="fas fa-file-csv"></i>
+                    <span>CSV</span>
+                    <span>CSV - Données brutes</span>
                 </a>
             </div>
 
-            <p style="margin: 20px 0; font-size: 14px; color: #666;">
-                Les fichiers se téléchargeront automatiquement dans un nouvel onglet
-            </p>
-
-            <button class="close-btn" onclick="closeModal()">Fermer cette fenêtre</button>
+            <div class="modal-footer">
+                <p>Le téléchargement débutera automatiquement dans un nouvel onglet</p>
+                <button class="btn-close" onclick="closeModal()">Fermer</button>
+            </div>
         </div>
     </div>
 
-        <script>
+    <!-- JavaScript -->
+    <script>
         // ⚠️ CONFIGUREZ ICI : Votre Worker Cloudflare
         const WORKER_URL = 'https://n8n-proxy.ayman93011.workers.dev/';
 
@@ -403,7 +841,7 @@
             const city = document.getElementById('city').value.trim();
 
             if (!keyword || !city) {
-                alert('Veuillez entrer un terme de recherche et une ville');
+                showToast('Veuillez remplir tous les champs', 'error');
                 return;
             }
 
@@ -411,21 +849,21 @@
             document.getElementById('loading').style.display = 'block';
             document.getElementById('result-container').style.display = 'none';
             document.getElementById('error-message').style.display = 'none';
-            closeModal(); // Fermer le modal si ouvert
+            closeModal();
 
             // Désactiver le bouton pendant la requête
-            const searchBtn = document.querySelector('.search-btn');
+            const searchBtn = document.getElementById('searchBtn');
             searchBtn.disabled = true;
-            searchBtn.textContent = 'Recherche en cours...';
+            searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Extraction en cours...';
 
-            // ⭐⭐⭐ CORRECTION : Construire l'URL Google Maps pour le scraping ⭐⭐⭐
+            // Construire l'URL Google Maps pour le scraping
             const query = encodeURIComponent(`${keyword} ${city}`);
             const targetURL = `https://www.google.com/maps/search/${query}/`;
 
-            // Préparer les données AVEC URL (obligatoire pour le proxy)
+            // Préparer les données
             const requestData = {
-                website: targetURL,      // Accepté par le proxy (website, url, link, target)
-                url: targetURL,          // Doublé pour être sûr
+                website: targetURL,
+                url: targetURL,
                 city: city,
                 keyword: keyword,
                 action: 'scrape_businesses',
@@ -436,7 +874,6 @@
 
             console.log('📤 Envoi des données:', requestData);
             console.log('🌐 Worker URL:', WORKER_URL);
-            console.log('📍 URL de scraping:', targetURL);
 
             // Envoyer la requête via votre Worker Cloudflare
             fetch(WORKER_URL, {
@@ -449,16 +886,15 @@
             })
                 .then(response => {
                     console.log('📥 Status:', response.status);
-                    console.log('📥 Headers:', response.headers);
 
                     // Réactiver le bouton
                     searchBtn.disabled = false;
-                    searchBtn.textContent = 'Lancer la recherche et générer Excel';
+                    searchBtn.innerHTML = '<i class="fas fa-play-circle"></i> Lancer l\'extraction';
 
                     if (!response.ok) {
                         return response.text().then(text => {
                             console.error('❌ Réponse erreur:', text);
-                            let errorMsg = `HTTP ${response.status}`;
+                            let errorMsg = `Erreur HTTP ${response.status}`;
                             try {
                                 const errorData = JSON.parse(text);
                                 errorMsg = errorData.message || errorMsg;
@@ -477,61 +913,25 @@
                     // Vérifier si la réponse est un succès
                     if (data.status === 'success' || data.success === true || data.status === 'completed') {
                         // Sauvegarder les URLs
-                        currentExcelUrl = data.data?.download_links?.excel || 
-                                         data.downloads?.excel || 
-                                         data.excel_url || 
-                                         data.file_urls?.excel || '';
+                        currentExcelUrl = data.data?.download_links?.excel ||
+                            data.downloads?.excel ||
+                            data.excel_url ||
+                            data.file_urls?.excel || '';
 
-                        currentCsvUrl = data.data?.download_links?.csv || 
-                                       data.downloads?.csv || 
-                                       data.csv_url || 
-                                       data.file_urls?.csv || '';
+                        currentCsvUrl = data.data?.download_links?.csv ||
+                            data.downloads?.csv ||
+                            data.csv_url ||
+                            data.file_urls?.csv || '';
 
-                        currentViewUrl = data.data?.view_online || 
-                                        data.view || 
-                                        data.preview_url || '';
+                        currentViewUrl = data.data?.view_online ||
+                            data.view ||
+                            data.preview_url || '';
 
                         // Mettre à jour les liens permanents
-                        if (currentExcelUrl) {
-                            document.getElementById('excel-link').href = currentExcelUrl;
-                            document.getElementById('modal-excel').href = currentExcelUrl;
-                            document.getElementById('excel-link').style.display = 'inline-block';
-                        } else {
-                            document.getElementById('excel-link').style.display = 'none';
-                        }
-
-                        if (currentCsvUrl) {
-                            document.getElementById('csv-link').href = currentCsvUrl;
-                            document.getElementById('modal-csv').href = currentCsvUrl;
-                            document.getElementById('csv-link').style.display = 'inline-block';
-                        } else {
-                            document.getElementById('csv-link').style.display = 'none';
-                        }
-
-                        if (currentViewUrl) {
-                            document.getElementById('view-link').href = currentViewUrl;
-                            document.getElementById('view-link').style.display = 'inline-block';
-                        } else {
-                            document.getElementById('view-link').style.display = 'none';
-                        }
+                        updateDownloadLinks();
 
                         // Afficher les informations des résultats
-                        const sample = data.data?.sample_data || data.sample || data.results?.[0] || {};
-                        const resultCount = data.data?.count || data.total_results || data.count || 'Plusieurs';
-                        
-                        document.getElementById('result-info').innerHTML = `
-                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #4CAF50;">
-                                <strong style="color: #333; display: block; margin-bottom: 10px; font-size: 16px;">
-                                    📋 Résultats trouvés : ${resultCount}
-                                </strong>
-                                <p><strong>🏢 Entreprise :</strong> ${sample.business || sample.name || sample.company || 'Non disponible'}</p>
-                                <p><strong>📍 Adresse :</strong> ${sample.address || sample.location || sample.full_address || 'Non disponible'}</p>
-                                <p><strong>📞 Téléphone :</strong> ${sample.phone || sample.telephone || sample.contact || 'Non disponible'}</p>
-                                <p><strong>⭐ Note :</strong> ${sample.rating || sample.review_rating || 'N/A'}/5</p>
-                                <p><strong>🌐 Site web :</strong> ${sample.website || sample.url || 'Non disponible'}</p>
-                                <p><strong>🕒 Généré le :</strong> ${new Date(data.timestamp || Date.now()).toLocaleString('fr-FR')}</p>
-                            </div>
-                        `;
+                        displayResults(data);
 
                         // Afficher le conteneur des résultats
                         document.getElementById('result-container').style.display = 'block';
@@ -540,21 +940,11 @@
                         if (currentExcelUrl || currentCsvUrl) {
                             setTimeout(() => {
                                 openModal();
-                            }, 800); // Petit délai pour l'effet
-                        }
-
-                        // Si pas de fichiers mais succès, afficher message
-                        if (!currentExcelUrl && !currentCsvUrl) {
-                            document.getElementById('result-info').innerHTML += `
-                                <div style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 5px; border: 1px solid #ffeaa7;">
-                                    <strong>ℹ️ Note :</strong> Les données ont été traitées avec succès mais aucun lien de téléchargement n'a été généré.<br>
-                                    Vérifiez la configuration de n8n pour générer des fichiers Excel/CSV.
-                                </div>
-                            `;
+                            }, 800);
                         }
 
                     } else {
-                        // Gestion des réponses d'erreur de n8n
+                        // Gestion des réponses d'erreur
                         let errorMsg = data.message || 'Erreur du serveur';
                         if (data.instructions) {
                             errorMsg += '<br><br>' + data.instructions.join('<br>');
@@ -570,7 +960,7 @@
 
                     // Réactiver le bouton
                     searchBtn.disabled = false;
-                    searchBtn.textContent = 'Lancer la recherche et générer Excel';
+                    searchBtn.innerHTML = '<i class="fas fa-play-circle"></i> Lancer l\'extraction';
 
                     // Cacher le chargement
                     document.getElementById('loading').style.display = 'none';
@@ -580,51 +970,107 @@
 
                     if (error.message.includes('400') || error.message.includes('Aucune URL')) {
                         errorMessage = `
-                            ❌ Erreur 400 - Données invalides<br><br>
-                            <strong>Le proxy attend une URL à scraper.</strong><br>
-                            Vérifiez que votre code envoie bien une clé "url" ou "website".<br>
-                            <small>Dernière requête envoyée: ${JSON.stringify(requestData)}</small>
-                        `;
+                        <strong>Données invalides</strong><br>
+                        Le proxy attend une URL à scraper. Vérifiez que votre code envoie bien une clé "url" ou "website".
+                    `;
                     } else if (error.message.includes('404') || error.message.includes('not registered')) {
                         errorMessage = `
-                            ❌ Erreur 404 - Webhook n8n non trouvé<br><br>
-                            <strong>Vérifiez dans n8n :</strong><br>
-                            1. Votre workflow est-il ACTIVÉ ? (toggle ON en haut à droite)<br>
-                            2. L'URL du webhook est-elle correcte ?<br>
-                            3. Testez avec curl:<br>
-                            <code>curl -X POST https://n8n.zackdev.io/webhook/scraping -H "Content-Type: application/json" -d '{"url":"https://google.com"}'</code>
-                        `;
+                        <strong>Webhook n8n non trouvé</strong><br>
+                        1. Vérifiez que votre workflow n8n est ACTIVÉ (toggle ON)<br>
+                        2. L'URL du webhook est-elle correcte ?<br>
+                    `;
                     } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
                         errorMessage = `
-                            ❌ Impossible de se connecter au proxy<br><br>
-                            <strong>Vérifiez :</strong><br>
-                            1. Votre Worker Cloudflare est déployé<br>
-                            2. L'URL est correcte: ${WORKER_URL}<br>
-                            3. Testez le proxy: <a href="${WORKER_URL}" target="_blank">${WORKER_URL}</a> (devrait afficher un message)<br>
-                            4. Les logs du Worker dans Cloudflare
-                        `;
+                        <strong>Impossible de se connecter au proxy</strong><br>
+                        Vérifiez :<br>
+                        1. Votre Worker Cloudflare est déployé<br>
+                        2. L'URL est correcte: ${WORKER_URL}<br>
+                    `;
                     } else if (error.message.includes('502') || error.message.includes('504')) {
                         errorMessage = `
-                            ❌ Proxy ne peut pas joindre n8n<br><br>
-                            <strong>Problèmes possibles :</strong><br>
-                            1. n8n est hors ligne<br>
-                            2. L'URL n8n est incorrecte<br>
-                            3. Timeout (n8n trop lent à répondre)<br><br>
-                            <strong>Test direct n8n :</strong><br>
-                            <a href="https://n8n.zackdev.io/webhook/scraping" target="_blank">https://n8n.zackdev.io/webhook/scraping</a>
-                        `;
+                        <strong>Proxy ne peut pas joindre n8n</strong><br>
+                        Problèmes possibles :<br>
+                        1. n8n est hors ligne<br>
+                        2. L'URL n8n est incorrecte<br>
+                        3. Timeout (n8n trop lent à répondre)<br>
+                    `;
                     }
 
                     showError(errorMessage);
                 });
         }
 
-        // Fonctions pour le modal
+        function updateDownloadLinks() {
+            const excelLink = document.getElementById('excel-link');
+            const csvLink = document.getElementById('csv-link');
+            const viewLink = document.getElementById('view-link');
+            const modalExcel = document.getElementById('modal-excel');
+            const modalCsv = document.getElementById('modal-csv');
+
+            if (currentExcelUrl) {
+                excelLink.href = currentExcelUrl;
+                modalExcel.href = currentExcelUrl;
+                excelLink.style.display = 'flex';
+            } else {
+                excelLink.style.display = 'none';
+            }
+
+            if (currentCsvUrl) {
+                csvLink.href = currentCsvUrl;
+                modalCsv.href = currentCsvUrl;
+                csvLink.style.display = 'flex';
+            } else {
+                csvLink.style.display = 'none';
+            }
+
+            if (currentViewUrl) {
+                viewLink.href = currentViewUrl;
+                viewLink.style.display = 'flex';
+            } else {
+                viewLink.style.display = 'none';
+            }
+        }
+
+        function displayResults(data) {
+            const sample = data.data?.sample_data || data.sample || data.results?.[0] || {};
+            const resultCount = data.data?.count || data.total_results || data.count || 'Plusieurs';
+            const timestamp = new Date(data.timestamp || Date.now()).toLocaleString('fr-FR');
+
+            const html = `
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Résultats trouvés</span>
+                        <span class="info-value">${resultCount}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Date d'extraction</span>
+                        <span class="info-value">${timestamp}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Nom de l'entreprise</span>
+                        <span class="info-value">${sample.business || sample.name || sample.company || 'N/A'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Note moyenne</span>
+                        <span class="info-value">${sample.rating || sample.review_rating || 'N/A'}/5</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Téléphone</span>
+                        <span class="info-value">${sample.phone || sample.telephone || sample.contact || 'N/A'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Site web</span>
+                        <span class="info-value">${sample.website || sample.url || 'N/A'}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('result-info-content').innerHTML = html;
+        }
+
         function openModal() {
             if (currentExcelUrl || currentCsvUrl) {
                 document.getElementById('downloadModal').style.display = 'flex';
-                // Animation d'entrée
-                document.querySelector('.modal-content').style.animation = 'slideIn 0.3s ease-out';
             }
         }
 
@@ -634,13 +1080,18 @@
 
         function showError(message) {
             const errorDiv = document.getElementById('error-message');
-            errorDiv.innerHTML = `<div style="padding: 15px; background: #f8d7da; border-radius: 5px; border: 1px solid #f5c6cb;">
-                ${message}
-            </div>`;
+            const errorContent = document.getElementById('error-content');
+
+            errorContent.innerHTML = message;
             errorDiv.style.display = 'block';
-            
+
             // Scroll vers l'erreur
             errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function showToast(message, type = 'info') {
+            // Simple toast notification
+            alert(message); // Vous pouvez remplacer par un vrai toast plus tard
         }
 
         // Permettre d'appuyer sur Entrée pour lancer la recherche
@@ -668,52 +1119,23 @@
         window.addEventListener('load', function () {
             console.log('🌐 Initialisation scraping...');
             console.log('📱 Worker configuré:', WORKER_URL);
-            
+
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+
             // Test rapide du proxy
             fetch(WORKER_URL, { method: 'GET' })
                 .then(response => response.json())
                 .then(data => {
                     console.log('✅ Proxy test réussi:', data.message);
-                    document.getElementById('status-indicator').innerHTML = 
-                        '<span style="color: #4CAF50;">●</span> Proxy connecté';
+                    statusDot.classList.add('active');
+                    statusText.textContent = 'Proxy connecté';
                 })
                 .catch(error => {
                     console.warn('⚠️ Proxy non accessible:', error);
-                    document.getElementById('status-indicator').innerHTML = 
-                        '<span style="color: #f44336;">●</span> Proxy hors ligne';
+                    statusText.textContent = 'Proxy hors ligne';
                 });
         });
-
-        // Ajout de styles CSS pour animations
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(-20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-            
-            .download-btn {
-                transition: all 0.3s ease;
-            }
-            
-            .download-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            }
-            
-            #status-indicator {
-                font-size: 12px;
-                margin-left: 10px;
-                font-weight: normal;
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 
