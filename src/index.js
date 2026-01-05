@@ -600,7 +600,7 @@ app.get('/js/*', serveStatic({ manifest }))
 const htmlFiles = [
     'index.html', 'studios.html', 'studio-detail.html',
     'login.html', 'register.html', 'favorites.html',
-    'add-studio.html', 'my-bookings.html', 'scraping.html'
+    'add-studio.html', 'my-bookings.html', 'scraping.html', 'chat.html'
 ]
 
 htmlFiles.forEach(file => {
@@ -613,4 +613,52 @@ app.get('/', serveStatic({ path: 'index.html', manifest }))
 // Catch-all static (ONLY if it hasn't matched any API or specific route)
 app.get('*', serveStatic({ manifest }))
 
+
+// --- Chat API ---
+
+app.post('/api/chat', async (c) => {
+    const { message } = await c.req.json();
+    const apiKey = c.env.OPENAI_API_KEY;
+
+    if (!message) {
+        return c.json({ error: 'Message is required' }, 400);
+    }
+
+    if (!apiKey) {
+        return c.json({ error: 'OpenAI API Key is not configured on the server.' }, 500);
+    }
+
+    try {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: 'gpt-3.5-turbo', // Or 'gpt-4' if available
+                messages: [
+                    { role: 'system', content: 'You are a helpful assistant for PhotoStudio Hub. You help users find studios and answer questions about photography.' },
+                    { role: 'user', content: message }
+                ]
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('OpenAI API Error:', errorData);
+            return c.json({ error: 'Failed to communicate with AI provider', details: errorData }, 502);
+        }
+
+        const data = await response.json();
+        const reply = data.choices[0].message.content;
+
+        return c.json({ reply });
+    } catch (error) {
+        console.error('Chat API Error:', error);
+        return c.json({ error: 'Internal server error processing chat', details: error.message }, 500);
+    }
+});
+
 export default app
+

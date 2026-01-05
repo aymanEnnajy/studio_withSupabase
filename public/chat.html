@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Assistant Intelligent PhotoStudio Hub">
+    <title>Chatbot IA - PhotoStudio Hub</title>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+    <!-- Navbar (Copied from index.html) -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-camera-retro"></i>
+                    <span>PhotoStudio<span class="accent">Hub</span></span>
+                </a>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="index.html" class="nav-link">Accueil</a></li>
+                    <li><a href="studios.html" class="nav-link">Studios</a></li>
+                    <li><a href="scraping.html" class="nav-link">Scraping</a></li>
+                    <li><a href="chat.html" class="nav-link active">Assistant IA</a></li>
+                    <li><a href="favorites.html" class="nav-link">
+                            <i class="fas fa-heart"></i> Favoris
+                        </a></li>
+                    <li class="nav-auth" id="navAuth">
+                        <a href="login.html" class="btn btn-outline">Connexion</a>
+                        <a href="register.html" class="btn btn-primary">Inscription</a>
+                    </li>
+                    <li class="nav-profile" id="navProfile" style="display: none;">
+                        <button class="profile-btn" id="profileBtn">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="usernameDisplay">Utilisateur</span>
+                        </button>
+                        <div class="dropdown-menu" id="profileDropdown">
+                            <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                            <a href="add-studio.html"><i class="fas fa-plus-circle"></i> Ajouter Studio</a>
+                            <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Chat Interface -->
+    <section class="chat-section">
+        <div class="container">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div class="chat-header-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="chat-header-info">
+                        <h2>Assistant GPT-Q</h2>
+                        <p>Posez vos questions sur la photographie ou nos studios</p>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message bot">
+                        Bonjour ! Je suis votre assistant virtuel. Comment puis-je vous aider aujourd'hui ?
+                    </div>
+                    <div class="typing-indicator" id="typingIndicator">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+
+                <form class="chat-input-area" id="chatForm">
+                    <input type="text" class="chat-input" id="messageInput" placeholder="Écrivez votre message..."
+                        autocomplete="off">
+                    <button type="submit" class="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-camera-retro"></i>
+                        <span>PhotoStudio<span class="accent">Hub</span></span>
+                    </div>
+                    <p class="footer-description">
+                        La plateforme de référence pour trouver et réserver les meilleurs studios photo professionnels
+                        au Maroc.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Navigation</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="studios.html">Studios</a></li>
+                        <li><a href="chat.html">Chatbot</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 PhotoStudio Hub. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script> <!-- Reusing main.js for navbar/auth logic -->
+    <script src="js/chat.js"></script>
+</body>
+
+</html>
