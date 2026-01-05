@@ -322,17 +322,22 @@
 class PhotoStudioChatbot {
     constructor() {
         // Configure these for your setup
-        this.n8nBaseUrl = 'https://n8n.zackdev.io/workflow/R8EchNezvvlWGI6u';
-        this.workflowId = 'ac816a4dd4a0408a935bae156f008631';
+        this.n8nBaseUrl = 'https://n8n.zackdev.io';
+        this.workflowId = 'R8EchNezvvlWGI6u';
         this.sessionId = this.generateSessionId();
         this.isOpen = false;
         this.isTyping = false;
         
         this.init();
+        
+        // Log for debugging
+        console.log('Chatbot initialized with session:', this.sessionId);
+        console.log('Endpoint:', `${this.n8nBaseUrl}/workflow/${this.workflowId}/chat`);
     }
     
     generateSessionId() {
-        return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        // Generate a session ID similar to what n8n expects
+        return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
     }
     
     init() {
@@ -404,7 +409,7 @@ class PhotoStudioChatbot {
         this.showTyping();
         
         try {
-            // Send to n8n workflow
+            // Send to n8n workflow - USING EXACT FORMAT FROM YOUR EXAMPLE
             const response = await this.callN8nWorkflow(message);
             
             // Remove typing indicator
@@ -425,17 +430,19 @@ class PhotoStudioChatbot {
     }
     
     async callN8nWorkflow(message) {
-        // Try multiple methods to get response
+        // EXACT FORMAT FROM YOUR EXAMPLE:
+        // { "sessionId": "ac816a4dd4a0408a935bae156f008631", "action": "sendMessage", "chatInput": "hello where is koutobia?" }
         
-        // Method 1: Direct chat endpoint (your current setup)
         const payload = {
             sessionId: this.sessionId,
             action: 'sendMessage',
             chatInput: message
         };
         
+        console.log('Sending to n8n:', payload);
+        
         try {
-            // First try the chat endpoint
+            // Try the chat endpoint
             const response = await fetch(`${this.n8nBaseUrl}/workflow/${this.workflowId}/chat`, {
                 method: 'POST',
                 headers: {
@@ -444,33 +451,85 @@ class PhotoStudioChatbot {
                 body: JSON.stringify(payload)
             });
             
+            console.log('Response status:', response.status);
+            
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
             
-            const data = await response.json();
+            // Try to parse response as JSON
+            let data;
+            try {
+                data = await response.json();
+                console.log('Response data:', data);
+            } catch (parseError) {
+                // If not JSON, get as text
+                const text = await response.text();
+                console.log('Response text:', text);
+                return text || "Received your message!";
+            }
             
-            // Extract response from different possible formats
-            if (data.response) return data.response;
-            if (data.message) return data.message;
-            if (data.text) return data.text;
-            if (data.choices && data.choices[0] && data.choices[0].message) {
+            // Try to extract response from different possible locations
+            // Check common response formats
+            if (data.response) {
+                return data.response;
+            }
+            if (data.message) {
+                return data.message;
+            }
+            if (data.text) {
+                return data.text;
+            }
+            if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
                 return data.choices[0].message.content;
             }
+            if (data.chatOutput) {
+                return data.chatOutput;
+            }
+            if (data.output) {
+                return data.output;
+            }
             
-            // If response is an object, stringify it
+            // If data is a string, return it
+            if (typeof data === 'string') {
+                return data;
+            }
+            
+            // If it's an object but we haven't found a message, try to stringify
             if (typeof data === 'object') {
+                // Look for any string property that might be the response
+                for (const key in data) {
+                    if (typeof data[key] === 'string' && data[key].length > 0) {
+                        return data[key];
+                    }
+                }
                 return JSON.stringify(data);
             }
             
-            return data;
+            // Default fallback
+            return "I received your message!";
             
         } catch (error) {
-            console.log('Chat endpoint failed, trying webhook...', error);
+            console.error('Fetch error:', error);
             
-            // Method 2: Try webhook if chat endpoint fails
+            // Try alternative endpoints if main one fails
+            return await this.tryAlternativeEndpoints(message);
+        }
+    }
+    
+    async tryAlternativeEndpoints(message) {
+        // Try different possible endpoints
+        const endpoints = [
+            `${this.n8nBaseUrl}/webhook-test/${this.workflowId}`,
+            `${this.n8nBaseUrl}/webhook/${this.workflowId}`,
+            `${this.n8nBaseUrl}/api/v1/workflows/${this.workflowId}/execute`
+        ];
+        
+        for (const endpoint of endpoints) {
             try {
-                const webhookResponse = await fetch(`${this.n8nBaseUrl}/webhook/${this.workflowId}`, {
+                console.log('Trying endpoint:', endpoint);
+                
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -481,14 +540,18 @@ class PhotoStudioChatbot {
                     })
                 });
                 
-                const webhookData = await webhookResponse.json();
-                return webhookData.response || webhookData.message || "Received your message!";
-                
-            } catch (webhookError) {
-                console.log('Webhook also failed');
-                throw error; // Re-throw original error
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Alternative endpoint success:', data);
+                    return data.response || data.message || data.text || "Received via alternative endpoint";
+                }
+            } catch (endpointError) {
+                console.log(`Endpoint ${endpoint} failed:`, endpointError);
+                continue;
             }
         }
+        
+        throw new Error('All endpoints failed');
     }
     
     addMessage(sender, text) {
@@ -516,6 +579,8 @@ class PhotoStudioChatbot {
     
     formatBotMessage(text) {
         // Basic formatting for bot messages
+        if (!text) return '';
+        
         return text
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\*(.*?)\*/g, '<em>$1</em>')
@@ -557,8 +622,12 @@ document.addEventListener('DOMContentLoaded', () => {
     window.photoChatbot = new PhotoStudioChatbot();
 });
 
-// Optional: Add this to your existing website's JS
-// window.openPhotoChat = () => window.photoChatbot.openChat();
+// Global function to open chat from anywhere
+window.openPhotoChat = function() {
+    if (window.photoChatbot) {
+        window.photoChatbot.openChat();
+    }
+};
 </script>
 
 </body>
