@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Photo Studio Chat Widget - Left Side */
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --bot-color: #f0f4ff;
+            --user-color: #667eea;
+            --text-dark: #333;
+            --text-light: white;
+            --shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        /* Chat Container */
+        #photo-chat-container {
+            position: fixed;
+            left: 20px;
+            bottom: 20px;
+            z-index: 10000;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        /* Toggle Button - Left Side */
+        #chat-toggle-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #chat-toggle-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Chat Window */
+        #chat-window {
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin-bottom: 15px;
+            display: none; /* Hidden by default */
+            border: 1px solid #e0e0e0;
+        }
+        
+        .chat-open {
+            display: flex !important;
+            animation: slideInLeft 0.3s ease;
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Chat Header */
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .studio-name {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .close-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Messages Area */
+        #chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        /* Message Bubbles */
+        .message {
+            max-width: 85%;
+            animation: messageAppear 0.3s ease;
+        }
+        
+        @keyframes messageAppear {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message-bot {
+            align-self: flex-start;
+        }
+        
+        .message-user {
+            align-self: flex-end;
+        }
+        
+        .message-content {
+            padding: 12px 15px;
+            border-radius: 18px;
+            line-height: 1.4;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+        
+        .bot-message {
+            background: white;
+            border: 1px solid #e0e0e0;
+            color: var(--text-dark);
+            border-top-left-radius: 5px;
+        }
+        
+        .user-message {
+            background: var(--primary-color);
+            color: white;
+            border-top-right-radius: 5px;
+        }
+        
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 15px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 18px;
+            border-top-left-radius: 5px;
+            align-self: flex-start;
+            max-width: 70px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out both;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        /* Input Area */
+        .chat-input-area {
+            padding: 15px;
+            border-top: 1px solid #e0e0e0;
+            background: white;
+            display: flex;
+            gap: 10px;
+        }
+        
+        #chat-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.3s;
+        }
+        
+        #chat-input:focus {
+            border-color: var(--primary-color);
+        }
+        
+        #send-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: background 0.3s;
+        }
+        
+        #send-btn:hover {
+            background: var(--secondary-color);
+        }
+        
+        /* Footer */
+        .chat-footer {
+            padding: 10px 15px;
+            text-align: center;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            font-size: 11px;
+            color: #666;
+        }
+        
+        /* Scrollbar Styling */
+        #chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        #chat-messages::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        #chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Add this anywhere in your website -->
+<div id="photo-chat-container">
+    <!-- Chat Window -->
+    <div id="chat-window">
+        <div class="chat-header">
+            <div class="chat-title">
+                <span>📸</span>
+                <div>
+                    <div>FotoGenius Assistant</div>
+                    <div class="studio-name">Your Photo Studio</div>
+                </div>
+            </div>
+            <button class="close-btn" id="close-chat">×</button>
+        </div>
+        
+        <div id="chat-messages">
+            <!-- Messages will appear here -->
+            <div class="message message-bot">
+                <div class="message-content bot-message">
+                    <strong>📸 FotoGenius:</strong> Hello! I'm your photography expert. Ask me about cameras, lighting, studio services, or anything photography-related!
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input-area">
+            <input 
+                type="text" 
+                id="chat-input" 
+                placeholder="Ask about photography..."
+                autocomplete="off"
+            >
+            <button id="send-btn">↑</button>
+        </div>
+        
+        <div class="chat-footer">
+            Powered by AI • Your Studio Name
+        </div>
+    </div>
+    
+    <!-- Toggle Button -->
+    <button id="chat-toggle-btn" title="Chat with FotoGenius">
+        📸
+    </button>
+</div>
+
+<script>
+class PhotoStudioChatbot {
+    constructor() {
+        // Configure these for your setup
+        this.n8nBaseUrl = 'https://n8n.zackdev.io';
+        this.workflowId = 'R8EchNezvvlWGI6u';
+        this.sessionId = this.generateSessionId();
+        this.isOpen = false;
+        this.isTyping = false;
+        
+        this.init();
+    }
+    
+    generateSessionId() {
+        return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    init() {
+        // Toggle chat window
+        document.getElementById('chat-toggle-btn').addEventListener('click', () => {
+            this.toggleChat();
+        });
+        
+        // Close chat
+        document.getElementById('close-chat').addEventListener('click', () => {
+            this.closeChat();
+        });
+        
+        // Send message on Enter
+        document.getElementById('chat-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                this.sendMessage();
+            }
+        });
+        
+        // Send message on button click
+        document.getElementById('send-btn').addEventListener('click', () => {
+            this.sendMessage();
+        });
+        
+        // Auto-open after 10 seconds (optional)
+        setTimeout(() => {
+            if (!localStorage.getItem('chatAutoOpened')) {
+                this.openChat();
+                localStorage.setItem('chatAutoOpened', 'true');
+            }
+        }, 10000);
+    }
+    
+    toggleChat() {
+        const chatWindow = document.getElementById('chat-window');
+        if (this.isOpen) {
+            chatWindow.classList.remove('chat-open');
+        } else {
+            chatWindow.classList.add('chat-open');
+            document.getElementById('chat-input').focus();
+        }
+        this.isOpen = !this.isOpen;
+    }
+    
+    openChat() {
+        document.getElementById('chat-window').classList.add('chat-open');
+        document.getElementById('chat-input').focus();
+        this.isOpen = true;
+    }
+    
+    closeChat() {
+        document.getElementById('chat-window').classList.remove('chat-open');
+        this.isOpen = false;
+    }
+    
+    async sendMessage() {
+        const input = document.getElementById('chat-input');
+        const message = input.value.trim();
+        
+        if (!message) return;
+        
+        // Add user message
+        this.addMessage('user', message);
+        input.value = '';
+        
+        // Show typing indicator
+        this.showTyping();
+        
+        try {
+            // Send to n8n workflow
+            const response = await this.callN8nWorkflow(message);
+            
+            // Remove typing indicator
+            this.hideTyping();
+            
+            // Add bot response
+            if (response) {
+                this.addMessage('bot', response);
+            } else {
+                throw new Error('No response received');
+            }
+            
+        } catch (error) {
+            console.error('Chat error:', error);
+            this.hideTyping();
+            this.addMessage('bot', "I'm having trouble connecting right now. Please try again or contact our studio directly.");
+        }
+    }
+    
+    async callN8nWorkflow(message) {
+        // Try multiple methods to get response
+        
+        // Method 1: Direct chat endpoint (your current setup)
+        const payload = {
+            sessionId: this.sessionId,
+            action: 'sendMessage',
+            chatInput: message
+        };
+        
+        try {
+            // First try the chat endpoint
+            const response = await fetch(`${this.n8nBaseUrl}/workflow/${this.workflowId}/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            // Extract response from different possible formats
+            if (data.response) return data.response;
+            if (data.message) return data.message;
+            if (data.text) return data.text;
+            if (data.choices && data.choices[0] && data.choices[0].message) {
+                return data.choices[0].message.content;
+            }
+            
+            // If response is an object, stringify it
+            if (typeof data === 'object') {
+                return JSON.stringify(data);
+            }
+            
+            return data;
+            
+        } catch (error) {
+            console.log('Chat endpoint failed, trying webhook...', error);
+            
+            // Method 2: Try webhook if chat endpoint fails
+            try {
+                const webhookResponse = await fetch(`${this.n8nBaseUrl}/webhook/${this.workflowId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        sessionId: this.sessionId
+                    })
+                });
+                
+                const webhookData = await webhookResponse.json();
+                return webhookData.response || webhookData.message || "Received your message!";
+                
+            } catch (webhookError) {
+                console.log('Webhook also failed');
+                throw error; // Re-throw original error
+            }
+        }
+    }
+    
+    addMessage(sender, text) {
+        const messagesContainer = document.getElementById('chat-messages');
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message message-${sender}`;
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.className = `message-content ${sender}-message`;
+        
+        // Format the message
+        if (sender === 'bot') {
+            contentDiv.innerHTML = this.formatBotMessage(text);
+        } else {
+            contentDiv.textContent = text;
+        }
+        
+        messageDiv.appendChild(contentDiv);
+        messagesContainer.appendChild(messageDiv);
+        
+        // Scroll to bottom
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+    
+    formatBotMessage(text) {
+        // Basic formatting for bot messages
+        return text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/\n/g, '<br>')
+            .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:#667eea;text-decoration:underline;">$1</a>');
+    }
+    
+    showTyping() {
+        if (this.isTyping) return;
+        
+        this.isTyping = true;
+        const messagesContainer = document.getElementById('chat-messages');
+        
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'typing-indicator';
+        typingDiv.id = 'typing-indicator';
+        
+        for (let i = 0; i < 3; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'typing-dot';
+            typingDiv.appendChild(dot);
+        }
+        
+        messagesContainer.appendChild(typingDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+    
+    hideTyping() {
+        this.isTyping = false;
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+}
+
+// Initialize the chatbot when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    window.photoChatbot = new PhotoStudioChatbot();
+});
+
+// Optional: Add this to your existing website's JS
+// window.openPhotoChat = () => window.photoChatbot.openChat();
+</script>
+
+</body>
+</html>
