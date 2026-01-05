@@ -508,7 +508,33 @@
     <!-- Custom JavaScript -->
     <script src="js/main.js"></script>
     <!-- Using Chatbot UI library -->
+<!-- Floating chat widget -->
+<iframe 
+  src="https://n8n.zackdev.io/workflow/R8EchNezvvlWGI6u"
+  width="380"
+  height="500"
+  style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    z-index: 1000;
+  "
+  title="FotoGenius Photography Assistant"
+>
+</iframe>
 
+<!-- Optional: Add toggle button -->
+<button onclick="toggleChat()" style="...">📸 Chat</button>
+
+<script>
+function toggleChat() {
+  const iframe = document.querySelector('iframe');
+  iframe.style.display = iframe.style.display === 'none' ? 'block' : 'none';
+}
+</script>
 </body>
 
 </html>
