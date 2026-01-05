@@ -321,9 +321,9 @@
 <script>
 class PhotoStudioChatbot {
     constructor() {
-        // Configure these for your setup
-        this.n8nBaseUrl = 'https://n8n.zackdev.io';
-        this.workflowId = 'R8EchNezvvlWGI6u';
+        // Use your CloudFlare Worker as proxy
+        this.cloudflareProxyUrl = 'https://studio-manager.ayman93011.workers.dev';
+        this.n8nWorkflowId = 'R8EchNezvvlWGI6u';
         this.sessionId = this.generateSessionId();
         this.isOpen = false;
         this.isTyping = false;
@@ -331,13 +331,13 @@ class PhotoStudioChatbot {
         this.init();
         
         // Log for debugging
-        console.log('Chatbot initialized with session:', this.sessionId);
-        console.log('Endpoint:', `${this.n8nBaseUrl}/workflow/${this.workflowId}/chat`);
+        console.log('📸 FotoGenius Chatbot initialized');
+        console.log('🌐 Using CloudFlare Proxy:', this.cloudflareProxyUrl);
+        console.log('🔄 Session ID:', this.sessionId);
     }
     
     generateSessionId() {
-        // Generate a session ID similar to what n8n expects
-        return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+        return 'chat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
     
     init() {
@@ -409,8 +409,8 @@ class PhotoStudioChatbot {
         this.showTyping();
         
         try {
-            // Send to n8n workflow - USING EXACT FORMAT FROM YOUR EXAMPLE
-            const response = await this.callN8nWorkflow(message);
+            // Send via CloudFlare proxy
+            const response = await this.sendViaProxy(message);
             
             // Remove typing indicator
             this.hideTyping();
@@ -429,21 +429,21 @@ class PhotoStudioChatbot {
         }
     }
     
-    async callN8nWorkflow(message) {
-        // EXACT FORMAT FROM YOUR EXAMPLE:
-        // { "sessionId": "ac816a4dd4a0408a935bae156f008631", "action": "sendMessage", "chatInput": "hello where is koutobia?" }
-        
+    async sendViaProxy(message) {
+        // Create payload matching your n8n workflow format
         const payload = {
+            // These fields match what your CloudFlare worker expects
+            url: `https://n8n.zackdev.io/workflow/${this.n8nWorkflowId}/chat`,
+            // The actual data for n8n chat
             sessionId: this.sessionId,
             action: 'sendMessage',
             chatInput: message
         };
         
-        console.log('Sending to n8n:', payload);
+        console.log('📤 Sending to CloudFlare proxy:', payload);
         
         try {
-            // Try the chat endpoint
-            const response = await fetch(`${this.n8nBaseUrl}/workflow/${this.workflowId}/chat`, {
+            const response = await fetch(this.cloudflareProxyUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -451,107 +451,79 @@ class PhotoStudioChatbot {
                 body: JSON.stringify(payload)
             });
             
-            console.log('Response status:', response.status);
+            console.log('📥 Response status:', response.status);
             
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                throw new Error(`CloudFlare proxy returned ${response.status}`);
             }
             
-            // Try to parse response as JSON
-            let data;
-            try {
-                data = await response.json();
-                console.log('Response data:', data);
-            } catch (parseError) {
-                // If not JSON, get as text
-                const text = await response.text();
-                console.log('Response text:', text);
-                return text || "Received your message!";
+            const data = await response.json();
+            console.log('📥 Response data:', data);
+            
+            // Extract response based on your CloudFlare worker structure
+            if (data.status === 'error') {
+                throw new Error(data.message || 'Error from proxy');
             }
             
-            // Try to extract response from different possible locations
-            // Check common response formats
-            if (data.response) {
-                return data.response;
-            }
-            if (data.message) {
-                return data.message;
-            }
-            if (data.text) {
-                return data.text;
-            }
-            if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
-                return data.choices[0].message.content;
-            }
-            if (data.chatOutput) {
-                return data.chatOutput;
-            }
-            if (data.output) {
-                return data.output;
-            }
+            // The response might be nested in different ways
+            // Try to extract the actual chatbot response
             
-            // If data is a string, return it
+            // Method 1: Direct response from n8n
+            if (data.response) return data.response;
+            if (data.message) return data.message;
+            if (data.text) return data.text;
+            
+            // Method 2: If n8n returns the chat response directly
+            if (data.chatOutput) return data.chatOutput;
+            if (data.output) return data.output;
+            
+            // Method 3: Check for nested response
+            if (data.data && data.data.response) return data.data.response;
+            
+            // Method 4: If it's a string, return it
             if (typeof data === 'string') {
-                return data;
+                return data.length > 500 ? data.substring(0, 500) + '...' : data;
             }
             
-            // If it's an object but we haven't found a message, try to stringify
-            if (typeof data === 'object') {
-                // Look for any string property that might be the response
-                for (const key in data) {
-                    if (typeof data[key] === 'string' && data[key].length > 0) {
-                        return data[key];
-                    }
-                }
-                return JSON.stringify(data);
-            }
-            
-            // Default fallback
-            return "I received your message!";
+            // Method 5: Return a formatted version of the data
+            return JSON.stringify(data, null, 2).substring(0, 500);
             
         } catch (error) {
-            console.error('Fetch error:', error);
+            console.error('❌ Proxy error:', error);
             
-            // Try alternative endpoints if main one fails
-            return await this.tryAlternativeEndpoints(message);
+            // Fallback: Try direct connection (might fail due to CORS)
+            try {
+                console.log('🔄 Trying direct connection as fallback...');
+                const directResponse = await this.tryDirectConnection(message);
+                return directResponse;
+            } catch (directError) {
+                console.error('❌ Direct connection also failed:', directError);
+                throw error; // Re-throw original proxy error
+            }
         }
     }
     
-    async tryAlternativeEndpoints(message) {
-        // Try different possible endpoints
-        const endpoints = [
-            `${this.n8nBaseUrl}/webhook-test/${this.workflowId}`,
-            `${this.n8nBaseUrl}/webhook/${this.workflowId}`,
-            `${this.n8nBaseUrl}/api/v1/workflows/${this.workflowId}/execute`
-        ];
+    async tryDirectConnection(message) {
+        // Try direct connection to n8n (may fail due to CORS)
+        const payload = {
+            sessionId: this.sessionId,
+            action: 'sendMessage',
+            chatInput: message
+        };
         
-        for (const endpoint of endpoints) {
-            try {
-                console.log('Trying endpoint:', endpoint);
-                
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        message: message,
-                        sessionId: this.sessionId
-                    })
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('Alternative endpoint success:', data);
-                    return data.response || data.message || data.text || "Received via alternative endpoint";
-                }
-            } catch (endpointError) {
-                console.log(`Endpoint ${endpoint} failed:`, endpointError);
-                continue;
-            }
+        const response = await fetch(`https://n8n.zackdev.io/workflow/${this.n8nWorkflowId}/chat`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Direct connection failed: ${response.status}`);
         }
         
-        throw new Error('All endpoints failed');
+        return await response.text();
     }
     
     addMessage(sender, text) {
@@ -578,7 +550,6 @@ class PhotoStudioChatbot {
     }
     
     formatBotMessage(text) {
-        // Basic formatting for bot messages
         if (!text) return '';
         
         return text
@@ -622,12 +593,42 @@ document.addEventListener('DOMContentLoaded', () => {
     window.photoChatbot = new PhotoStudioChatbot();
 });
 
-// Global function to open chat from anywhere
-window.openPhotoChat = function() {
-    if (window.photoChatbot) {
-        window.photoChatbot.openChat();
+// Test the proxy connection
+async function testProxyConnection() {
+    console.log('🧪 Testing CloudFlare proxy connection...');
+    
+    try {
+        const testResponse = await fetch('https://studio-manager.ayman93011.workers.dev', {
+            method: 'GET'
+        });
+        
+        const testData = await testResponse.json();
+        console.log('✅ Proxy test successful:', testData);
+        
+        // Also test POST
+        const postTest = await fetch('https://studio-manager.ayman93011.workers.dev', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                url: 'https://n8n.zackdev.io/workflow/R8EchNezvvlWGI6u/chat',
+                sessionId: 'test_session',
+                action: 'sendMessage',
+                chatInput: 'test message'
+            })
+        });
+        
+        const postData = await postTest.json();
+        console.log('✅ POST test response:', postData);
+        
+    } catch (error) {
+        console.error('❌ Proxy test failed:', error);
     }
-};
+}
+
+// Run test on page load (optional)
+// setTimeout(testProxyConnection, 1000);
 </script>
 
 </body>
