@@ -3431,7 +3431,12 @@ select:focus-visible {
     gap: 4rem;
     transition: all 0.3s ease;
 }
-
+.section-description{
+    color: black;
+}
+.studio-badge{
+    font-size: 15px;
+}
 .studios-grid {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 }
