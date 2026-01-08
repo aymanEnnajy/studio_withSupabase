@@ -348,6 +348,7 @@ ol {
     visibility: hidden;
     transform: translateY(-10px);
     transition: all var(--transition-base);
+        display: contents;
 }
 
 .profile-dropdown:hover .dropdown-menu,
@@ -3695,4 +3696,7 @@ select:focus-visible {
 .floating-card{
     z-index: 999;
     box-shadow:4px 8px #00000021;
+}
+.navbar> .container{
+    padding-top: 10px;
 }

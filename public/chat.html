@@ -5,30 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FotoGenius - AI Photo Expert</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <style>
-        @keyframes slideInLeft {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        
-        @keyframes messageAppear {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
-        }
-        
-        .chat-open {
-            animation: slideInLeft 0.3s ease;
-        }
-        
-        .message-appear {
-            animation: messageAppear 0.3s ease;
-        }
-    </style>
 </head>
 <body class="bg-gray-50">
 
@@ -42,42 +18,33 @@
                 <div class="text-2xl">📸</div>
                 <div>
                     <div class="font-semibold text-sm">FotoGenius Assistant</div>
-                    <div class="text-xs opacity-90">AI Photography Expert</div>
+                    <div class="text-xs opacity-90">Powered by n8n AI</div>
                 </div>
             </div>
-            <button id="closeChatBtn" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-xl cursor-pointer transition-colors">
+            <button id="closeChatBtn" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-xl cursor-pointer">
                 ×
             </button>
         </div>
         
-        <!-- Messages Container -->
+        <!-- Messages -->
         <div id="chatMessages" class="flex-1 p-4 overflow-y-auto bg-gray-50 flex flex-col gap-3">
-            <!-- Welcome Message -->
-            <div class="message-appear max-w-[85%] self-start">
-                <div class="bg-white p-3 rounded-2xl rounded-tl-sm border border-gray-200 text-gray-800 text-sm shadow-sm">
-                    <span class="font-semibold">📸 FotoGenius:</span> Hello! I'm your AI photography expert. I can help you with:
-                    <ul class="mt-2 ml-4 space-y-1">
-                        <li>• Camera & gear recommendations</li>
-                        <li>• Photography techniques & settings</li>
-                        <li>• Studio information & services</li>
-                        <li>• Lighting & composition advice</li>
-                        <li>• Photo editing tips</li>
-                    </ul>
-                    What photography question can I help with today?
+            <div class="max-w-[85%] self-start">
+                <div class="bg-white p-3 rounded-2xl rounded-tl-sm border border-gray-200 text-gray-800 text-sm">
+                    <span class="font-semibold">📸 FotoGenius:</span> Hello! I'm your AI photography expert connected to n8n. Ask me anything about photography!
                 </div>
             </div>
         </div>
         
         <!-- Quick Suggestions -->
         <div class="p-3 bg-blue-50 border-t border-gray-200 flex flex-wrap gap-2">
-            <button onclick="askQuestion('What is your studio address in Marrakech?')" class="px-3 py-1.5 bg-white text-gray-700 text-xs rounded-full border border-gray-300 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-colors cursor-pointer">
-                📍 Studio Address
+            <button onclick="askQuestion('What is your studio address?')" class="px-3 py-1.5 bg-white text-gray-700 text-xs rounded-full border border-gray-300 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-colors">
+                📍 Address
             </button>
-            <button onclick="askQuestion('What camera should I buy for portrait photography?')" class="px-3 py-1.5 bg-white text-gray-700 text-xs rounded-full border border-gray-300 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-colors cursor-pointer">
-                📷 Camera Advice
+            <button onclick="askQuestion('Best camera for beginners?')" class="px-3 py-1.5 bg-white text-gray-700 text-xs rounded-full border border-gray-300 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-colors">
+                📷 Camera
             </button>
-            <button onclick="askQuestion('What photography services do you offer?')" class="px-3 py-1.5 bg-white text-gray-700 text-xs rounded-full border border-gray-300 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-colors cursor-pointer">
-                💼 Services
+            <button onclick="askQuestion('Photography tips for portraits?')" class="px-3 py-1.5 bg-white text-gray-700 text-xs rounded-full border border-gray-300 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-colors">
+                💡 Tips
             </button>
         </div>
         
@@ -86,62 +53,48 @@
             <input 
                 type="text" 
                 id="chatInput"
-                class="flex-1 px-4 py-3 rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Ask about photography, cameras, or studio services..."
+                class="flex-1 px-4 py-3 rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Ask about photography..."
                 autocomplete="off"
             >
-            <button id="sendBtn" class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full flex items-center justify-center text-lg hover:from-blue-600 hover:to-purple-700 transition-all cursor-pointer">
+            <button id="sendBtn" class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full flex items-center justify-center text-lg hover:from-blue-600 hover:to-purple-700 transition-colors">
                 ↑
             </button>
-        </div>
-        
-        <!-- Footer -->
-        <div class="px-4 py-2 text-center bg-gray-50 border-t border-gray-200 text-xs text-gray-600">
-            <div class="flex items-center justify-center gap-2">
-                <span>Powered by</span>
-                <span class="font-semibold text-blue-500">n8n + OpenRouter AI</span>
-                <span class="text-gray-400">•</span>
-                <span>Real-time Assistant</span>
-            </div>
         </div>
     </div>
     
     <!-- Toggle Button -->
-    <button id="chatToggleBtn" class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full text-2xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all cursor-pointer flex items-center justify-center">
+    <button id="chatToggleBtn" class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full text-2xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all flex items-center justify-center">
         📸
     </button>
 </div>
 
 <script>
-// ⭐ CONFIGURATION - Votre vrai endpoint n8n
+// ⭐ CONFIGURATION - Utilisez votre Worker CloudFlare
 const CONFIG = {
-    N8N_ENDPOINT: 'https://n8n.zackdev.io/webhook/8fb77b0d-5185-4a6b-8640-de0f04cedbb4/chat',
-    SESSION_ID: 'ac816a4dd4a0408a935bae156f008631',
+    // Votre Worker CloudFlare comme proxy
+    PROXY_URL: 'https://studio-manager.ayman93011.workers.dev',
     
-    STUDIO: {
-        name: 'Marrakech Photo Studio',
-        phone: '+212 XXX-XXXX',
-        email: 'info@studiorakech.ma'
-    }
+    // Info n8n (pour référence)
+    N8N_ENDPOINT: 'https://n8n.zackdev.io/webhook/8fb77b0d-5185-4a6b-8640-de0f04cedbb4/chat',
+    SESSION_ID: 'ac816a4dd4a0408a935bae156f008631'
 };
 
-class FotoGeniusChatbot {
+class FotoGeniusChat {
     constructor() {
         this.sessionId = CONFIG.SESSION_ID;
         this.isOpen = false;
         this.isTyping = false;
-        this.messageHistory = [];
         
-        console.log('📸 FotoGenius Chatbot Initialized');
-        console.log('✅ Endpoint:', CONFIG.N8N_ENDPOINT);
-        console.log('🔑 Session ID:', this.sessionId);
+        console.log('🤖 FotoGenius Chat - Using CloudFlare Proxy');
+        console.log('🌐 Proxy:', CONFIG.PROXY_URL);
         
         this.init();
-        this.testConnection();
+        this.testProxy();
     }
     
     init() {
-        // Initialize DOM elements
+        // Elements
         this.elements = {
             toggleBtn: document.getElementById('chatToggleBtn'),
             closeBtn: document.getElementById('closeChatBtn'),
@@ -151,45 +104,30 @@ class FotoGeniusChatbot {
             sendBtn: document.getElementById('sendBtn')
         };
         
-        // Event listeners
+        // Events
         this.elements.toggleBtn.addEventListener('click', () => this.toggleChat());
         this.elements.closeBtn.addEventListener('click', () => this.closeChat());
         this.elements.sendBtn.addEventListener('click', () => this.sendMessage());
         this.elements.input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                this.sendMessage();
-            }
+            if (e.key === 'Enter') this.sendMessage();
         });
         
-        // Auto-open after 3 seconds
-        setTimeout(() => {
-            if (!localStorage.getItem('fotogeniusChatOpened')) {
-                this.openChat();
-                localStorage.setItem('fotogeniusChatOpened', 'true');
-            }
-        }, 3000);
+        // Auto-open
+        setTimeout(() => this.openChat(), 2000);
     }
     
     toggleChat() {
-        this.isOpen = !this.isOpen;
-        if (this.isOpen) {
-            this.openChat();
-        } else {
-            this.closeChat();
-        }
+        this.isOpen ? this.closeChat() : this.openChat();
     }
     
     openChat() {
         this.elements.chatWindow.classList.remove('hidden');
-        this.elements.chatWindow.classList.add('chat-open');
         this.elements.input.focus();
         this.isOpen = true;
     }
     
     closeChat() {
         this.elements.chatWindow.classList.add('hidden');
-        this.elements.chatWindow.classList.remove('chat-open');
         this.isOpen = false;
     }
     
@@ -197,350 +135,189 @@ class FotoGeniusChatbot {
         const message = this.elements.input.value.trim();
         if (!message) return;
         
-        // Add user message to chat
         this.addMessage('user', message);
         this.elements.input.value = '';
         
-        // Save to history
-        this.messageHistory.push({
-            role: 'user',
-            content: message,
-            timestamp: new Date().toISOString()
-        });
-        
-        // Show typing indicator
         this.showTyping();
         
         try {
-            // Get AI response from n8n
-            const aiResponse = await this.getAIResponse(message);
-            
-            // Hide typing indicator
+            const response = await this.callViaProxy(message);
             this.hideTyping();
-            
-            // Add bot response to chat
-            this.addMessage('bot', aiResponse);
-            
-            // Save to history
-            this.messageHistory.push({
-                role: 'bot',
-                content: aiResponse,
-                timestamp: new Date().toISOString()
-            });
+            this.addMessage('bot', response);
             
         } catch (error) {
-            console.error('Chat error:', error);
+            console.error('Error:', error);
             this.hideTyping();
-            
-            // Fallback response
-            const fallback = this.getSmartResponse(message);
-            this.addMessage('bot', fallback);
+            this.addMessage('bot', 'Sorry, connection issue. Please try again.');
         }
     }
     
-    async getAIResponse(message) {
-        // Prepare payload exactly as n8n expects
+    async callViaProxy(message) {
+        // Send to CloudFlare Worker
         const payload = {
             sessionId: this.sessionId,
             action: 'sendMessage',
             chatInput: message
         };
         
-        console.log('📤 Sending to n8n:', payload);
+        console.log('📤 To Proxy:', payload);
         
-        // Send to n8n endpoint
-        const response = await fetch(CONFIG.N8N_ENDPOINT, {
+        const response = await fetch(CONFIG.PROXY_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(payload)
         });
         
-        console.log('📥 Response status:', response.status);
+        console.log('📥 Proxy status:', response.status);
         
-        if (!response.ok) {
-            throw new Error(`n8n returned ${response.status}`);
+        const data = await response.json();
+        console.log('📥 Proxy data:', data);
+        
+        if (!data.success) {
+            throw new Error(data.error || 'Proxy error');
         }
         
-        // Try to parse response
-        let data;
-        try {
-            data = await response.json();
-            console.log('📥 Raw response:', data);
-        } catch (error) {
-            const text = await response.text();
-            console.log('📥 Text response:', text.substring(0, 200));
-            throw new Error('Invalid JSON from n8n');
-        }
-        
-        // Extract AI response from different possible formats
-        return this.extractAIResponse(data);
+        // Extract AI response
+        return this.extractResponse(data.data);
     }
     
-    extractAIResponse(data) {
-        // If n8n returns just the session ID (common issue)
-        if (data === this.sessionId || data === 'ac816a4dd4a0408a935bae156f008631') {
-            console.warn('⚠️ n8n is returning session ID instead of AI response');
-            console.warn('💡 Check n8n workflow: Make sure AI Agent output is connected to Webhook Response');
-            return this.generateSmartResponse();
-        }
+    extractResponse(data) {
+        if (!data) return 'No response from AI';
         
-        // If data is a string (already the response)
+        // If data is a string
         if (typeof data === 'string') {
-            return data;
+            return data === this.sessionId ? 'AI processing...' : data;
         }
         
-        // If data is an object, search for AI response in common fields
+        // If data is object
         if (typeof data === 'object') {
-            // Common response field names
-            const responseFields = [
-                'response', 'message', 'text', 'answer', 'output',
-                'chatOutput', 'result', 'content', 'completion'
-            ];
+            // Check for response fields
+            if (data.response) return data.response;
+            if (data.message) return data.message;
+            if (data.text) return data.text;
+            if (data.answer) return data.answer;
             
-            for (const field of responseFields) {
-                if (data[field] && typeof data[field] === 'string' && data[field].length > 5) {
-                    return data[field];
-                }
-            }
-            
-            // OpenAI API format
-            if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
+            // OpenAI format
+            if (data.choices && data.choices[0] && data.choices[0].message) {
                 return data.choices[0].message.content;
             }
             
-            // Nested data structure
-            if (data.data) {
-                for (const field of responseFields) {
-                    if (data.data[field]) {
-                        return data.data[field];
-                    }
-                }
-            }
-            
-            // If we have an array, try first item
-            if (Array.isArray(data) && data.length > 0) {
-                const first = data[0];
-                if (typeof first === 'string') return first;
-                if (typeof first === 'object') return JSON.stringify(first);
-            }
-            
-            // Last resort: stringify the object
-            try {
-                const str = JSON.stringify(data);
-                if (str !== `"${this.sessionId}"`) {
-                    return str.substring(0, 500);
-                }
-            } catch (e) {
-                // Ignore
-            }
+            // Return stringified if nothing else
+            return JSON.stringify(data).substring(0, 300);
         }
         
-        // If nothing works, generate smart response
-        return this.generateSmartResponse();
-    }
-    
-    generateSmartResponse(question = '') {
-        const q = question.toLowerCase();
-        
-        // Address/Location questions
-        if (q.includes('address') || q.includes('location') || q.includes('marrakech') || q.includes('where')) {
-            return `Our photography studio is located in Marrakech, Morocco. For the exact address and directions, please contact us at **${CONFIG.STUDIO.phone}** or email **${CONFIG.STUDIO.email}**. We're open Monday-Friday, 9 AM to 7 PM.`;
-        }
-        
-        // Contact questions
-        if (q.includes('phone') || q.includes('contact') || q.includes('call') || q.includes('whatsapp') || q.includes('email')) {
-            return `You can reach us at **${CONFIG.STUDIO.phone}**. We're available for consultations, bookings, and photography advice. You can also email us at **${CONFIG.STUDIO.email}** for detailed inquiries.`;
-        }
-        
-        // Camera/Equipment questions
-        if (q.includes('camera') || q.includes('buy') || q.includes('recommend') || q.includes('equipment') || q.includes('gear')) {
-            return `For photography equipment, I recommend:\n\n` +
-                   `• **Beginner**: Canon EOS Rebel T8i or Nikon D3500\n` +
-                   `• **Enthusiast**: Sony A6400 or Canon EOS RP\n` +
-                   `• **Professional**: Sony A7IV or Canon EOS R5\n` +
-                   `• **Lens**: 50mm f/1.8 for portraits, 24-70mm f/2.8 for versatility\n\n` +
-                   `Visit our studio in Marrakech for hands-on demos and expert advice!`;
-        }
-        
-        // Services questions
-        if (q.includes('service') || q.includes('offer') || q.includes('provide') || q.includes('do you')) {
-            return `Our Marrakech studio offers comprehensive photography services:\n\n` +
-                   `• **Portrait Photography** - Studio & outdoor sessions\n` +
-                   `• **Wedding Photography** - Full coverage packages\n` +
-                   `• **Product Photography** - For e-commerce & marketing\n` +
-                   `• **Studio Rental** - Professional setup by the hour/day\n` +
-                   `• **Photography Classes** - Beginner to advanced levels\n\n` +
-                   `Contact us for pricing and availability!`;
-        }
-        
-        // Price questions
-        if (q.includes('price') || q.includes('cost') || q.includes('how much') || q.includes('rate')) {
-            return `Our photography services start from **500 MAD**. Final pricing depends on:\n\n` +
-                   `• Type of session (portrait, wedding, product, etc.)\n` +
-                   `• Duration and location requirements\n` +
-                   `• Number of final edited photos\n` +
-                   `• Additional services (printing, framing, albums)\n\n` +
-                   `Contact us for a personalized quote tailored to your needs!`;
-        }
-        
-        // Photography technique questions
-        if (q.includes('portrait') || q.includes('settings') || q.includes('tips') || q.includes('how to')) {
-            return `For portrait photography, here are my recommendations:\n\n` +
-                   `• **Aperture**: f/2.8 to f/5.6 for beautiful background blur\n` +
-                   `• **Shutter Speed**: Minimum 1/125s to avoid motion blur\n` +
-                   `• **ISO**: Keep low (100-400) for best quality\n` +
-                   `• **Lighting**: Soft, diffused light is most flattering\n` +
-                   `• **Composition**: Use rule of thirds, leading lines\n` +
-                   `• **Focus**: Always focus on the eyes for portraits\n\n` +
-                   `Visit our studio for hands-on training!`;
-        }
-        
-        // Default response
-        return `Thank you for your photography question! I'm processing it now. ` +
-               `For immediate assistance or to visit our studio, please contact us at **${CONFIG.STUDIO.phone}** ` +
-               `or email **${CONFIG.STUDIO.email}**. Our team of photography experts is here to help!`;
-    }
-    
-    getSmartResponse(question) {
-        return this.generateSmartResponse(question);
+        return 'AI response received';
     }
     
     addMessage(sender, text) {
-        const messagesContainer = this.elements.messages;
+        const div = document.createElement('div');
+        div.className = `max-w-[85%] ${sender === 'bot' ? 'self-start' : 'self-end'}`;
         
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message-appear max-w-[85%] ${sender === 'bot' ? 'self-start' : 'self-end'}`;
-        
-        const contentDiv = document.createElement('div');
-        contentDiv.className = `p-3 rounded-2xl text-sm shadow-sm ${sender === 'bot' ? 'bg-white border border-gray-200 text-gray-800 rounded-tl-sm' : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-tr-sm'}`;
+        const content = document.createElement('div');
+        content.className = `p-3 rounded-2xl text-sm ${sender === 'bot' ? 'bg-white border border-gray-200 text-gray-800 rounded-tl-sm' : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-tr-sm'}`;
         
         if (sender === 'bot') {
-            contentDiv.innerHTML = `<span class="font-semibold">📸 FotoGenius:</span> ${this.formatMessage(text)}`;
+            content.innerHTML = `<span class="font-semibold">📸 FotoGenius:</span> ${text}`;
         } else {
-            contentDiv.textContent = text;
+            content.textContent = text;
         }
         
-        messageDiv.appendChild(contentDiv);
-        messagesContainer.appendChild(messageDiv);
+        div.appendChild(content);
+        this.elements.messages.appendChild(div);
         
-        // Scroll to bottom
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-    
-    formatMessage(text) {
-        if (!text) return '';
-        
-        return text
-            .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold">$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
-            .replace(/\n/g, '<br>')
-            .replace(/^- (.*?)(?=\n|$)/gm, '• $1<br>')
-            .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-blue-500 hover:underline">$1</a>');
+        // Scroll
+        this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
     }
     
     showTyping() {
-        if (this.isTyping) return;
-        
         this.isTyping = true;
-        const messagesContainer = this.elements.messages;
         
-        const typingDiv = document.createElement('div');
-        typingDiv.className = 'message-appear max-w-[85%] self-start';
-        typingDiv.id = 'typingIndicator';
-        
-        typingDiv.innerHTML = `
-            <div class="bg-white p-3 rounded-2xl rounded-tl-sm border border-gray-200 flex items-center gap-1">
-                <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: -0.32s"></div>
-                <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: -0.16s"></div>
-                <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+        const div = document.createElement('div');
+        div.className = 'max-w-[85%] self-start';
+        div.id = 'typingIndicator';
+        div.innerHTML = `
+            <div class="bg-white p-3 rounded-2xl rounded-tl-sm border border-gray-200 flex items-center gap-2">
+                <div class="flex gap-1">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: -0.32s"></div>
+                    <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: -0.16s"></div>
+                    <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                </div>
+                <span class="text-gray-500 text-xs">AI is typing...</span>
             </div>
         `;
         
-        messagesContainer.appendChild(typingDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        this.elements.messages.appendChild(div);
+        this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
     }
     
     hideTyping() {
         this.isTyping = false;
-        const typingIndicator = document.getElementById('typingIndicator');
-        if (typingIndicator) {
-            typingIndicator.remove();
-        }
+        const indicator = document.getElementById('typingIndicator');
+        if (indicator) indicator.remove();
     }
     
-    async testConnection() {
-        console.log('🧪 Testing n8n connection...');
+    async testProxy() {
+        console.log('🧪 Testing CloudFlare proxy...');
         
         try {
-            const testPayload = {
-                sessionId: this.sessionId,
-                action: 'sendMessage',
-                chatInput: 'test connection'
-            };
-            
-            const response = await fetch(CONFIG.N8N_ENDPOINT, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(testPayload)
+            const response = await fetch(CONFIG.PROXY_URL, {
+                method: 'GET'
             });
             
             const data = await response.json();
-            console.log('✅ Connection test:', {
-                status: response.status,
-                response: data
-            });
+            console.log('✅ Proxy test:', data);
             
         } catch (error) {
-            console.error('❌ Connection test failed:', error);
+            console.error('❌ Proxy test failed:', error);
         }
     }
 }
 
-// Global function for quick suggestions
-function askQuestion(question) {
-    if (window.fotoGeniusChatbot) {
-        document.getElementById('chatInput').value = question;
-        window.fotoGeniusChatbot.sendMessage();
-    }
-}
-
-// Initialize chatbot when page loads
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    window.fotoGeniusChatbot = new FotoGeniusChatbot();
+    window.chatbot = new FotoGeniusChat();
     
-    // Global function to open chat
-    window.openFotoGeniusChat = function() {
-        window.fotoGeniusChatbot.openChat();
+    // Quick question function
+    window.askQuestion = function(question) {
+        document.getElementById('chatInput').value = question;
+        window.chatbot.sendMessage();
     };
     
-    // Debug function to test n8n response
-    window.debugN8nResponse = async function() {
-        console.log('🔍 Debugging n8n response format...');
+    // Add bounce animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        .animate-bounce {
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Test direct connection
+    window.testDirectN8n = async function() {
+        console.log('🔍 Testing direct n8n connection...');
         
-        const response = await fetch(CONFIG.N8N_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                sessionId: CONFIG.SESSION_ID,
-                action: 'sendMessage',
-                chatInput: 'What is your studio address?'
-            })
-        });
-        
-        const data = await response.json();
-        console.log('📊 n8n response analysis:', {
-            status: response.status,
-            raw: data,
-            type: typeof data,
-            keys: typeof data === 'object' ? Object.keys(data) : 'N/A',
-            isSessionId: data === CONFIG.SESSION_ID
-        });
-        
-        return data;
+        try {
+            const response = await fetch(CONFIG.N8N_ENDPOINT, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    sessionId: CONFIG.SESSION_ID,
+                    action: 'sendMessage',
+                    chatInput: 'test'
+                })
+            });
+            console.log('Direct test (no-cors):', response);
+        } catch (error) {
+            console.log('Direct connection blocked (expected):', error.message);
+        }
     };
+    
+    setTimeout(() => window.testDirectN8n(), 1000);
 });
 </script>
 
