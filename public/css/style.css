@@ -1002,7 +1002,7 @@ section {
 /* === Studio Cards === */
 .studios-grid {
     display: grid;
-    gap: 2rem;
+    gap: 4rem;
     grid-template-columns: 1fr;
 }
 
