@@ -3428,7 +3428,7 @@ select:focus-visible {
 .studios-grid,
 .studios-list {
     display: grid;
-    gap: 2rem;
+    gap: 4rem;
     transition: all 0.3s ease;
 }
 

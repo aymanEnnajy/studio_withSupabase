@@ -23,13 +23,13 @@
 
         .chat-widget-wrapper {
             position: fixed;
-            left: 20px;
-            bottom: 20px;
+            right: 20px;
+            bottom: 90px;
             z-index: 9999;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: flex-end;
             pointer-events: none;
         }
 
