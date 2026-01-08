@@ -41,7 +41,7 @@
     <div class="fixed left-5 bottom-5 z-50">
         <!-- Chat Window -->
         <div id="chatWindow"
-            class="w-96 h-[600px] bg-white rounded-2xl shadow-2xl mb-4 border border-gray-200 overflow-hidden hidden animate-slide-in-left">
+            class="w-96 h-[600px] bg-white rounded-2xl shadow-2xl mb-4 border border-gray-200 overflow-hidden hidden animate-slide-in-left flex flex-col">
             <!-- Header -->
             <div class="bg-gradient-to-r from-blue-600 to-purple-700 text-white p-4">
                 <div class="flex justify-between items-center">
@@ -124,7 +124,7 @@
     <script>
         // Configuration - DIRECT n8n endpoint
         const CONFIG = {
-            N8N_ENDPOINT: 'https://n8n.zackdev.io/webhook/8fb77b0d-5185-4a6b-8640-de0f04cedbb4/chat',
+            N8N_ENDPOINT: 'https://n8n.zackdev.io/webhook/0414cfcc-6e2d-48d3-9f6c-af7895f2142d/chat',
             SESSION_ID: 'ac816a4dd4a0408a935bae156f008631'
         };
 
@@ -318,7 +318,9 @@
                 this.elements.messages.appendChild(messageDiv);
 
                 // Scroll to bottom
-                this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
+                setTimeout(() => {
+                    this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
+                }, 10);
             }
 
             formatText(text) {
@@ -354,7 +356,9 @@
         `;
 
                 this.elements.messages.appendChild(typingDiv);
-                this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
+                setTimeout(() => {
+                    this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
+                }, 10);
             }
 
             hideTyping() {
