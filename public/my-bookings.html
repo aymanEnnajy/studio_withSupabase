@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
+
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mes Réservations - PhotoStudio Hub</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar" id="navbar">
@@ -24,18 +28,18 @@
                 <i class="fas fa-camera-retro"></i>
                 PhotoStudio<span>Hub</span>
             </a>
-            
+
             <div class="nav-links">
                 <a href="index.html">Accueil</a>
                 <a href="studios.html">Studios</a>
                 <a href="favorites.html">Favoris</a>
                 <a href="my-bookings.html" class="active">Réservations</a>
             </div>
-            
+
             <div class="nav-auth" id="navAuth">
                 <!-- Injected via JS -->
             </div>
-            
+
             <button class="menu-toggle" aria-label="Menu">
                 <span></span>
                 <span></span>
@@ -52,7 +56,7 @@
                 <h1><i class="fas fa-calendar-check"></i> Mes Réservations</h1>
                 <p>Gérez vos sessions de shooting à venir</p>
             </header>
-            
+
             <!-- Auth Required Message -->
             <div id="authRequired" class="auth-required" style="display: none;">
                 <div class="auth-card">
@@ -90,4 +94,5 @@
     <script src="js/main.js"></script>
     <script src="js/my-bookings.js"></script>
 </body>
+
 </html>

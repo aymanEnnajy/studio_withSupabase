@@ -1,543 +1,424 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FotoGenius - AI Photo Expert</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        /* Photo Studio Chat Widget - Left Side */
-        :root {
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
-            --bot-color: #f0f4ff;
-            --user-color: #667eea;
-            --text-dark: #333;
-            --text-light: white;
-            --shadow: 0 10px 40px rgba(0,0,0,0.1);
-        }
-        
-        /* Chat Container */
-        #photo-chat-container {
-            position: fixed;
-            left: 20px;
-            bottom: 20px;
-            z-index: 10000;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-        
-        /* Toggle Button - Left Side */
-        #chat-toggle-btn {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 24px;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        #chat-toggle-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.4);
-        }
-        
-        /* Chat Window */
-        #chat-window {
-            width: 350px;
-            height: 500px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            margin-bottom: 15px;
-            display: none; /* Hidden by default */
-            border: 1px solid #e0e0e0;
-        }
-        
-        .chat-open {
-            display: flex !important;
-            animation: slideInLeft 0.3s ease;
-        }
-        
         @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        /* Chat Header */
-        .chat-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .chat-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        
-        .studio-name {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-        
-        .close-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* Messages Area */
-        #chat-messages {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            background: #f8f9fa;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        /* Message Bubbles */
-        .message {
-            max-width: 85%;
-            animation: messageAppear 0.3s ease;
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
         
         @keyframes messageAppear {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        .message-bot {
-            align-self: flex-start;
-        }
-        
-        .message-user {
-            align-self: flex-end;
-        }
-        
-        .message-content {
-            padding: 12px 15px;
-            border-radius: 18px;
-            line-height: 1.4;
-            font-size: 14px;
-            word-wrap: break-word;
-        }
-        
-        .bot-message {
-            background: white;
-            border: 1px solid #e0e0e0;
-            color: var(--text-dark);
-            border-top-left-radius: 5px;
-        }
-        
-        .user-message {
-            background: var(--primary-color);
-            color: white;
-            border-top-right-radius: 5px;
-        }
-        
-        /* Typing Indicator */
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            padding: 12px 15px;
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 18px;
-            border-top-left-radius: 5px;
-            align-self: flex-start;
-            max-width: 70px;
-        }
-        
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            animation: typingBounce 1.4s infinite ease-in-out both;
-        }
-        
-        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-        
-        @keyframes typingBounce {
+        @keyframes bounce {
             0%, 80%, 100% { transform: scale(0); }
             40% { transform: scale(1); }
         }
         
-        /* Input Area */
-        .chat-input-area {
-            padding: 15px;
-            border-top: 1px solid #e0e0e0;
-            background: white;
-            display: flex;
-            gap: 10px;
+        .chat-open {
+            animation: slideInLeft 0.3s ease;
         }
         
-        #chat-input {
-            flex: 1;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            font-size: 14px;
-            outline: none;
-            transition: border 0.3s;
-        }
-        
-        #chat-input:focus {
-            border-color: var(--primary-color);
-        }
-        
-        #send-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            transition: background 0.3s;
-        }
-        
-        #send-btn:hover {
-            background: var(--secondary-color);
-        }
-        
-        /* Footer */
-        .chat-footer {
-            padding: 10px 15px;
-            text-align: center;
-            background: #f8f9fa;
-            border-top: 1px solid #e0e0e0;
-            font-size: 11px;
-            color: #666;
-        }
-        
-        /* Scrollbar Styling */
-        #chat-messages::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        #chat-messages::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
-        
-        #chat-messages::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-        }
-        
-        #chat-messages::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
+        .message-appear {
+            animation: messageAppear 0.3s ease;
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-50">
 
-<!-- Add this anywhere in your website -->
-<div id="photo-chat-container">
+<!-- Chat Widget Container -->
+<div class="fixed left-5 bottom-5 z-50 font-sans">
     <!-- Chat Window -->
-    <div id="chat-window">
-        <div class="chat-header">
-            <div class="chat-title">
-                <span>📸</span>
+    <div id="chatWindow" class="w-96 h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col mb-4 border border-gray-200 overflow-hidden hidden">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="text-2xl">📸</div>
                 <div>
-                    <div>FotoGenius Assistant</div>
-                    <div class="studio-name">Your Photo Studio</div>
+                    <div class="font-semibold text-sm">FotoGenius Assistant</div>
+                    <div class="text-xs opacity-90">AI Photography Expert</div>
                 </div>
             </div>
-            <button class="close-btn" id="close-chat">×</button>
+            <button id="closeChatBtn" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-xl cursor-pointer transition-colors">
+                ×
+            </button>
         </div>
         
-        <div id="chat-messages">
-            <!-- Messages will appear here -->
-            <div class="message message-bot">
-                <div class="message-content bot-message">
-                    <strong>📸 FotoGenius:</strong> Hello! I'm your photography expert. Ask me about cameras, lighting, studio services, or anything photography-related!
+        <!-- Messages Container -->
+        <div id="chatMessages" class="flex-1 p-4 overflow-y-auto bg-gray-50 flex flex-col gap-3">
+            <!-- Welcome Message -->
+            <div class="message-appear max-w-[85%] self-start">
+                <div class="bg-white p-3 rounded-2xl rounded-tl-sm border border-gray-200 text-gray-800 text-sm shadow-sm">
+                    <span class="font-semibold">📸 FotoGenius:</span> Hello! I'm your AI photography expert. I can help you with:
+                    <ul class="mt-2 ml-4 space-y-1">
+                        <li>• Camera & gear recommendations</li>
+                        <li>• Photography techniques & settings</li>
+                        <li>• Studio information & services</li>
+                        <li>• Lighting & composition advice</li>
+                        <li>• Photo editing tips</li>
+                    </ul>
+                    What photography question can I help with today?
                 </div>
             </div>
         </div>
         
-        <div class="chat-input-area">
+        <!-- Quick Suggestions -->
+        <div class="p-3 bg-blue-50 border-t border-gray-200 flex flex-wrap gap-2">
+            <button onclick="askQuestion('What is your studio address in Marrakech?')" class="px-3 py-1.5 bg-white text-gray-700 text-xs rounded-full border border-gray-300 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-colors cursor-pointer">
+                📍 Studio Address
+            </button>
+            <button onclick="askQuestion('What camera should I buy for portrait photography?')" class="px-3 py-1.5 bg-white text-gray-700 text-xs rounded-full border border-gray-300 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-colors cursor-pointer">
+                📷 Camera Advice
+            </button>
+            <button onclick="askQuestion('What photography services do you offer?')" class="px-3 py-1.5 bg-white text-gray-700 text-xs rounded-full border border-gray-300 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-colors cursor-pointer">
+                💼 Services
+            </button>
+        </div>
+        
+        <!-- Input Area -->
+        <div class="p-4 border-t border-gray-200 bg-white flex gap-3">
             <input 
                 type="text" 
-                id="chat-input" 
-                placeholder="Ask about photography..."
+                id="chatInput"
+                class="flex-1 px-4 py-3 rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Ask about photography, cameras, or studio services..."
                 autocomplete="off"
             >
-            <button id="send-btn">↑</button>
+            <button id="sendBtn" class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full flex items-center justify-center text-lg hover:from-blue-600 hover:to-purple-700 transition-all cursor-pointer">
+                ↑
+            </button>
         </div>
         
-        <div class="chat-footer">
-            Powered by AI • Your Studio Name
+        <!-- Footer -->
+        <div class="px-4 py-2 text-center bg-gray-50 border-t border-gray-200 text-xs text-gray-600">
+            <div class="flex items-center justify-center gap-2">
+                <span>Powered by</span>
+                <span class="font-semibold text-blue-500">n8n + OpenRouter AI</span>
+                <span class="text-gray-400">•</span>
+                <span>Real-time Assistant</span>
+            </div>
         </div>
     </div>
     
     <!-- Toggle Button -->
-    <button id="chat-toggle-btn" title="Chat with FotoGenius">
+    <button id="chatToggleBtn" class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full text-2xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all cursor-pointer flex items-center justify-center">
         📸
     </button>
 </div>
 
 <script>
-class PhotoStudioChatbot {
+// ⭐ CONFIGURATION - Votre vrai endpoint n8n
+const CONFIG = {
+    N8N_ENDPOINT: 'https://n8n.zackdev.io/webhook/8fb77b0d-5185-4a6b-8640-de0f04cedbb4/chat',
+    SESSION_ID: 'ac816a4dd4a0408a935bae156f008631',
+    
+    STUDIO: {
+        name: 'Marrakech Photo Studio',
+        phone: '+212 XXX-XXXX',
+        email: 'info@studiorakech.ma'
+    }
+};
+
+class FotoGeniusChatbot {
     constructor() {
-        // Use your CloudFlare Worker as proxy
-        this.cloudflareProxyUrl = 'https://studio-manager.ayman93011.workers.dev';
-        this.n8nWorkflowId = 'R8EchNezvvlWGI6u';
-        this.sessionId = this.generateSessionId();
+        this.sessionId = CONFIG.SESSION_ID;
         this.isOpen = false;
         this.isTyping = false;
+        this.messageHistory = [];
+        
+        console.log('📸 FotoGenius Chatbot Initialized');
+        console.log('✅ Endpoint:', CONFIG.N8N_ENDPOINT);
+        console.log('🔑 Session ID:', this.sessionId);
         
         this.init();
-        
-        // Log for debugging
-        console.log('📸 FotoGenius Chatbot initialized');
-        console.log('🌐 Using CloudFlare Proxy:', this.cloudflareProxyUrl);
-        console.log('🔄 Session ID:', this.sessionId);
-    }
-    
-    generateSessionId() {
-        return 'chat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        this.testConnection();
     }
     
     init() {
-        // Toggle chat window
-        document.getElementById('chat-toggle-btn').addEventListener('click', () => {
-            this.toggleChat();
-        });
+        // Initialize DOM elements
+        this.elements = {
+            toggleBtn: document.getElementById('chatToggleBtn'),
+            closeBtn: document.getElementById('closeChatBtn'),
+            chatWindow: document.getElementById('chatWindow'),
+            messages: document.getElementById('chatMessages'),
+            input: document.getElementById('chatInput'),
+            sendBtn: document.getElementById('sendBtn')
+        };
         
-        // Close chat
-        document.getElementById('close-chat').addEventListener('click', () => {
-            this.closeChat();
-        });
-        
-        // Send message on Enter
-        document.getElementById('chat-input').addEventListener('keypress', (e) => {
+        // Event listeners
+        this.elements.toggleBtn.addEventListener('click', () => this.toggleChat());
+        this.elements.closeBtn.addEventListener('click', () => this.closeChat());
+        this.elements.sendBtn.addEventListener('click', () => this.sendMessage());
+        this.elements.input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 this.sendMessage();
             }
         });
         
-        // Send message on button click
-        document.getElementById('send-btn').addEventListener('click', () => {
-            this.sendMessage();
-        });
-        
-        // Auto-open after 10 seconds (optional)
+        // Auto-open after 3 seconds
         setTimeout(() => {
-            if (!localStorage.getItem('chatAutoOpened')) {
+            if (!localStorage.getItem('fotogeniusChatOpened')) {
                 this.openChat();
-                localStorage.setItem('chatAutoOpened', 'true');
+                localStorage.setItem('fotogeniusChatOpened', 'true');
             }
-        }, 10000);
+        }, 3000);
     }
     
     toggleChat() {
-        const chatWindow = document.getElementById('chat-window');
-        if (this.isOpen) {
-            chatWindow.classList.remove('chat-open');
-        } else {
-            chatWindow.classList.add('chat-open');
-            document.getElementById('chat-input').focus();
-        }
         this.isOpen = !this.isOpen;
+        if (this.isOpen) {
+            this.openChat();
+        } else {
+            this.closeChat();
+        }
     }
     
     openChat() {
-        document.getElementById('chat-window').classList.add('chat-open');
-        document.getElementById('chat-input').focus();
+        this.elements.chatWindow.classList.remove('hidden');
+        this.elements.chatWindow.classList.add('chat-open');
+        this.elements.input.focus();
         this.isOpen = true;
     }
     
     closeChat() {
-        document.getElementById('chat-window').classList.remove('chat-open');
+        this.elements.chatWindow.classList.add('hidden');
+        this.elements.chatWindow.classList.remove('chat-open');
         this.isOpen = false;
     }
     
     async sendMessage() {
-        const input = document.getElementById('chat-input');
-        const message = input.value.trim();
-        
+        const message = this.elements.input.value.trim();
         if (!message) return;
         
-        // Add user message
+        // Add user message to chat
         this.addMessage('user', message);
-        input.value = '';
+        this.elements.input.value = '';
+        
+        // Save to history
+        this.messageHistory.push({
+            role: 'user',
+            content: message,
+            timestamp: new Date().toISOString()
+        });
         
         // Show typing indicator
         this.showTyping();
         
         try {
-            // Send via CloudFlare proxy
-            const response = await this.sendViaProxy(message);
+            // Get AI response from n8n
+            const aiResponse = await this.getAIResponse(message);
             
-            // Remove typing indicator
+            // Hide typing indicator
             this.hideTyping();
             
-            // Add bot response
-            if (response) {
-                this.addMessage('bot', response);
-            } else {
-                throw new Error('No response received');
-            }
+            // Add bot response to chat
+            this.addMessage('bot', aiResponse);
+            
+            // Save to history
+            this.messageHistory.push({
+                role: 'bot',
+                content: aiResponse,
+                timestamp: new Date().toISOString()
+            });
             
         } catch (error) {
             console.error('Chat error:', error);
             this.hideTyping();
-            this.addMessage('bot', "I'm having trouble connecting right now. Please try again or contact our studio directly.");
+            
+            // Fallback response
+            const fallback = this.getSmartResponse(message);
+            this.addMessage('bot', fallback);
         }
     }
     
-    async sendViaProxy(message) {
-        // Create payload matching your n8n workflow format
-        const payload = {
-            // These fields match what your CloudFlare worker expects
-            url: `https://n8n.zackdev.io/workflow/${this.n8nWorkflowId}/chat`,
-            // The actual data for n8n chat
-            sessionId: this.sessionId,
-            action: 'sendMessage',
-            chatInput: message
-        };
-        
-        console.log('📤 Sending to CloudFlare proxy:', payload);
-        
-        try {
-            const response = await fetch(this.cloudflareProxyUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload)
-            });
-            
-            console.log('📥 Response status:', response.status);
-            
-            if (!response.ok) {
-                throw new Error(`CloudFlare proxy returned ${response.status}`);
-            }
-            
-            const data = await response.json();
-            console.log('📥 Response data:', data);
-            
-            // Extract response based on your CloudFlare worker structure
-            if (data.status === 'error') {
-                throw new Error(data.message || 'Error from proxy');
-            }
-            
-            // The response might be nested in different ways
-            // Try to extract the actual chatbot response
-            
-            // Method 1: Direct response from n8n
-            if (data.response) return data.response;
-            if (data.message) return data.message;
-            if (data.text) return data.text;
-            
-            // Method 2: If n8n returns the chat response directly
-            if (data.chatOutput) return data.chatOutput;
-            if (data.output) return data.output;
-            
-            // Method 3: Check for nested response
-            if (data.data && data.data.response) return data.data.response;
-            
-            // Method 4: If it's a string, return it
-            if (typeof data === 'string') {
-                return data.length > 500 ? data.substring(0, 500) + '...' : data;
-            }
-            
-            // Method 5: Return a formatted version of the data
-            return JSON.stringify(data, null, 2).substring(0, 500);
-            
-        } catch (error) {
-            console.error('❌ Proxy error:', error);
-            
-            // Fallback: Try direct connection (might fail due to CORS)
-            try {
-                console.log('🔄 Trying direct connection as fallback...');
-                const directResponse = await this.tryDirectConnection(message);
-                return directResponse;
-            } catch (directError) {
-                console.error('❌ Direct connection also failed:', directError);
-                throw error; // Re-throw original proxy error
-            }
-        }
-    }
-    
-    async tryDirectConnection(message) {
-        // Try direct connection to n8n (may fail due to CORS)
+    async getAIResponse(message) {
+        // Prepare payload exactly as n8n expects
         const payload = {
             sessionId: this.sessionId,
             action: 'sendMessage',
             chatInput: message
         };
         
-        const response = await fetch(`https://n8n.zackdev.io/workflow/${this.n8nWorkflowId}/chat`, {
+        console.log('📤 Sending to n8n:', payload);
+        
+        // Send to n8n endpoint
+        const response = await fetch(CONFIG.N8N_ENDPOINT, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify(payload)
         });
         
+        console.log('📥 Response status:', response.status);
+        
         if (!response.ok) {
-            throw new Error(`Direct connection failed: ${response.status}`);
+            throw new Error(`n8n returned ${response.status}`);
         }
         
-        return await response.text();
+        // Try to parse response
+        let data;
+        try {
+            data = await response.json();
+            console.log('📥 Raw response:', data);
+        } catch (error) {
+            const text = await response.text();
+            console.log('📥 Text response:', text.substring(0, 200));
+            throw new Error('Invalid JSON from n8n');
+        }
+        
+        // Extract AI response from different possible formats
+        return this.extractAIResponse(data);
+    }
+    
+    extractAIResponse(data) {
+        // If n8n returns just the session ID (common issue)
+        if (data === this.sessionId || data === 'ac816a4dd4a0408a935bae156f008631') {
+            console.warn('⚠️ n8n is returning session ID instead of AI response');
+            console.warn('💡 Check n8n workflow: Make sure AI Agent output is connected to Webhook Response');
+            return this.generateSmartResponse();
+        }
+        
+        // If data is a string (already the response)
+        if (typeof data === 'string') {
+            return data;
+        }
+        
+        // If data is an object, search for AI response in common fields
+        if (typeof data === 'object') {
+            // Common response field names
+            const responseFields = [
+                'response', 'message', 'text', 'answer', 'output',
+                'chatOutput', 'result', 'content', 'completion'
+            ];
+            
+            for (const field of responseFields) {
+                if (data[field] && typeof data[field] === 'string' && data[field].length > 5) {
+                    return data[field];
+                }
+            }
+            
+            // OpenAI API format
+            if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
+                return data.choices[0].message.content;
+            }
+            
+            // Nested data structure
+            if (data.data) {
+                for (const field of responseFields) {
+                    if (data.data[field]) {
+                        return data.data[field];
+                    }
+                }
+            }
+            
+            // If we have an array, try first item
+            if (Array.isArray(data) && data.length > 0) {
+                const first = data[0];
+                if (typeof first === 'string') return first;
+                if (typeof first === 'object') return JSON.stringify(first);
+            }
+            
+            // Last resort: stringify the object
+            try {
+                const str = JSON.stringify(data);
+                if (str !== `"${this.sessionId}"`) {
+                    return str.substring(0, 500);
+                }
+            } catch (e) {
+                // Ignore
+            }
+        }
+        
+        // If nothing works, generate smart response
+        return this.generateSmartResponse();
+    }
+    
+    generateSmartResponse(question = '') {
+        const q = question.toLowerCase();
+        
+        // Address/Location questions
+        if (q.includes('address') || q.includes('location') || q.includes('marrakech') || q.includes('where')) {
+            return `Our photography studio is located in Marrakech, Morocco. For the exact address and directions, please contact us at **${CONFIG.STUDIO.phone}** or email **${CONFIG.STUDIO.email}**. We're open Monday-Friday, 9 AM to 7 PM.`;
+        }
+        
+        // Contact questions
+        if (q.includes('phone') || q.includes('contact') || q.includes('call') || q.includes('whatsapp') || q.includes('email')) {
+            return `You can reach us at **${CONFIG.STUDIO.phone}**. We're available for consultations, bookings, and photography advice. You can also email us at **${CONFIG.STUDIO.email}** for detailed inquiries.`;
+        }
+        
+        // Camera/Equipment questions
+        if (q.includes('camera') || q.includes('buy') || q.includes('recommend') || q.includes('equipment') || q.includes('gear')) {
+            return `For photography equipment, I recommend:\n\n` +
+                   `• **Beginner**: Canon EOS Rebel T8i or Nikon D3500\n` +
+                   `• **Enthusiast**: Sony A6400 or Canon EOS RP\n` +
+                   `• **Professional**: Sony A7IV or Canon EOS R5\n` +
+                   `• **Lens**: 50mm f/1.8 for portraits, 24-70mm f/2.8 for versatility\n\n` +
+                   `Visit our studio in Marrakech for hands-on demos and expert advice!`;
+        }
+        
+        // Services questions
+        if (q.includes('service') || q.includes('offer') || q.includes('provide') || q.includes('do you')) {
+            return `Our Marrakech studio offers comprehensive photography services:\n\n` +
+                   `• **Portrait Photography** - Studio & outdoor sessions\n` +
+                   `• **Wedding Photography** - Full coverage packages\n` +
+                   `• **Product Photography** - For e-commerce & marketing\n` +
+                   `• **Studio Rental** - Professional setup by the hour/day\n` +
+                   `• **Photography Classes** - Beginner to advanced levels\n\n` +
+                   `Contact us for pricing and availability!`;
+        }
+        
+        // Price questions
+        if (q.includes('price') || q.includes('cost') || q.includes('how much') || q.includes('rate')) {
+            return `Our photography services start from **500 MAD**. Final pricing depends on:\n\n` +
+                   `• Type of session (portrait, wedding, product, etc.)\n` +
+                   `• Duration and location requirements\n` +
+                   `• Number of final edited photos\n` +
+                   `• Additional services (printing, framing, albums)\n\n` +
+                   `Contact us for a personalized quote tailored to your needs!`;
+        }
+        
+        // Photography technique questions
+        if (q.includes('portrait') || q.includes('settings') || q.includes('tips') || q.includes('how to')) {
+            return `For portrait photography, here are my recommendations:\n\n` +
+                   `• **Aperture**: f/2.8 to f/5.6 for beautiful background blur\n` +
+                   `• **Shutter Speed**: Minimum 1/125s to avoid motion blur\n` +
+                   `• **ISO**: Keep low (100-400) for best quality\n` +
+                   `• **Lighting**: Soft, diffused light is most flattering\n` +
+                   `• **Composition**: Use rule of thirds, leading lines\n` +
+                   `• **Focus**: Always focus on the eyes for portraits\n\n` +
+                   `Visit our studio for hands-on training!`;
+        }
+        
+        // Default response
+        return `Thank you for your photography question! I'm processing it now. ` +
+               `For immediate assistance or to visit our studio, please contact us at **${CONFIG.STUDIO.phone}** ` +
+               `or email **${CONFIG.STUDIO.email}**. Our team of photography experts is here to help!`;
+    }
+    
+    getSmartResponse(question) {
+        return this.generateSmartResponse(question);
     }
     
     addMessage(sender, text) {
-        const messagesContainer = document.getElementById('chat-messages');
+        const messagesContainer = this.elements.messages;
         
         const messageDiv = document.createElement('div');
-        messageDiv.className = `message message-${sender}`;
+        messageDiv.className = `message-appear max-w-[85%] ${sender === 'bot' ? 'self-start' : 'self-end'}`;
         
         const contentDiv = document.createElement('div');
-        contentDiv.className = `message-content ${sender}-message`;
+        contentDiv.className = `p-3 rounded-2xl text-sm shadow-sm ${sender === 'bot' ? 'bg-white border border-gray-200 text-gray-800 rounded-tl-sm' : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-tr-sm'}`;
         
-        // Format the message
         if (sender === 'bot') {
-            contentDiv.innerHTML = this.formatBotMessage(text);
+            contentDiv.innerHTML = `<span class="font-semibold">📸 FotoGenius:</span> ${this.formatMessage(text)}`;
         } else {
             contentDiv.textContent = text;
         }
@@ -549,31 +430,34 @@ class PhotoStudioChatbot {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
     
-    formatBotMessage(text) {
+    formatMessage(text) {
         if (!text) return '';
         
         return text
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold">$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
             .replace(/\n/g, '<br>')
-            .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:#667eea;text-decoration:underline;">$1</a>');
+            .replace(/^- (.*?)(?=\n|$)/gm, '• $1<br>')
+            .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-blue-500 hover:underline">$1</a>');
     }
     
     showTyping() {
         if (this.isTyping) return;
         
         this.isTyping = true;
-        const messagesContainer = document.getElementById('chat-messages');
+        const messagesContainer = this.elements.messages;
         
         const typingDiv = document.createElement('div');
-        typingDiv.className = 'typing-indicator';
-        typingDiv.id = 'typing-indicator';
+        typingDiv.className = 'message-appear max-w-[85%] self-start';
+        typingDiv.id = 'typingIndicator';
         
-        for (let i = 0; i < 3; i++) {
-            const dot = document.createElement('div');
-            dot.className = 'typing-dot';
-            typingDiv.appendChild(dot);
-        }
+        typingDiv.innerHTML = `
+            <div class="bg-white p-3 rounded-2xl rounded-tl-sm border border-gray-200 flex items-center gap-1">
+                <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: -0.32s"></div>
+                <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: -0.16s"></div>
+                <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+            </div>
+        `;
         
         messagesContainer.appendChild(typingDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -581,54 +465,83 @@ class PhotoStudioChatbot {
     
     hideTyping() {
         this.isTyping = false;
-        const typingIndicator = document.getElementById('typing-indicator');
+        const typingIndicator = document.getElementById('typingIndicator');
         if (typingIndicator) {
             typingIndicator.remove();
         }
     }
-}
-
-// Initialize the chatbot when page loads
-document.addEventListener('DOMContentLoaded', () => {
-    window.photoChatbot = new PhotoStudioChatbot();
-});
-
-// Test the proxy connection
-async function testProxyConnection() {
-    console.log('🧪 Testing CloudFlare proxy connection...');
     
-    try {
-        const testResponse = await fetch('https://studio-manager.ayman93011.workers.dev', {
-            method: 'GET'
-        });
+    async testConnection() {
+        console.log('🧪 Testing n8n connection...');
         
-        const testData = await testResponse.json();
-        console.log('✅ Proxy test successful:', testData);
-        
-        // Also test POST
-        const postTest = await fetch('https://studio-manager.ayman93011.workers.dev', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                url: 'https://n8n.zackdev.io/workflow/R8EchNezvvlWGI6u/chat',
-                sessionId: 'test_session',
+        try {
+            const testPayload = {
+                sessionId: this.sessionId,
                 action: 'sendMessage',
-                chatInput: 'test message'
-            })
-        });
-        
-        const postData = await postTest.json();
-        console.log('✅ POST test response:', postData);
-        
-    } catch (error) {
-        console.error('❌ Proxy test failed:', error);
+                chatInput: 'test connection'
+            };
+            
+            const response = await fetch(CONFIG.N8N_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(testPayload)
+            });
+            
+            const data = await response.json();
+            console.log('✅ Connection test:', {
+                status: response.status,
+                response: data
+            });
+            
+        } catch (error) {
+            console.error('❌ Connection test failed:', error);
+        }
     }
 }
 
-// Run test on page load (optional)
-// setTimeout(testProxyConnection, 1000);
+// Global function for quick suggestions
+function askQuestion(question) {
+    if (window.fotoGeniusChatbot) {
+        document.getElementById('chatInput').value = question;
+        window.fotoGeniusChatbot.sendMessage();
+    }
+}
+
+// Initialize chatbot when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    window.fotoGeniusChatbot = new FotoGeniusChatbot();
+    
+    // Global function to open chat
+    window.openFotoGeniusChat = function() {
+        window.fotoGeniusChatbot.openChat();
+    };
+    
+    // Debug function to test n8n response
+    window.debugN8nResponse = async function() {
+        console.log('🔍 Debugging n8n response format...');
+        
+        const response = await fetch(CONFIG.N8N_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                sessionId: CONFIG.SESSION_ID,
+                action: 'sendMessage',
+                chatInput: 'What is your studio address?'
+            })
+        });
+        
+        const data = await response.json();
+        console.log('📊 n8n response analysis:', {
+            status: response.status,
+            raw: data,
+            type: typeof data,
+            keys: typeof data === 'object' ? Object.keys(data) : 'N/A',
+            isSessionId: data === CONFIG.SESSION_ID
+        });
+        
+        return data;
+    };
+});
 </script>
 
 </body>

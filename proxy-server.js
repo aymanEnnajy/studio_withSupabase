@@ -18,7 +18,7 @@ app.use(express.json());
 app.post('/api/search-maps', async (req, res) => {
     try {
         console.log('📤 Requête reçue:', req.body);
-        
+
         // Forward vers n8n
         const response = await axios.post(
             'https://n8n.zackdev.io/webhook/scraping',
@@ -31,13 +31,13 @@ app.post('/api/search-maps', async (req, res) => {
                 timeout: 30000 // 30 secondes timeout
             }
         );
-        
+
         console.log('✅ Réponse n8n:', response.data);
         res.json(response.data);
-        
+
     } catch (error) {
         console.error('❌ Erreur proxy:', error.message);
-        
+
         if (error.response) {
             // Erreur de n8n
             res.status(error.response.status).json({
@@ -61,8 +61,8 @@ app.post('/api/search-maps', async (req, res) => {
 
 // Route test
 app.get('/api/test', (req, res) => {
-    res.json({ 
-        status: 'ok', 
+    res.json({
+        status: 'ok',
         message: 'Proxy server running',
         timestamp: new Date().toISOString()
     });
@@ -74,6 +74,8 @@ app.get('/', (req, res) => {
         <!DOCTYPE html>
         <html>
         <head>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
             <title>Proxy Server</title>
             <style>
                 body { font-family: Arial, sans-serif; padding: 20px; }

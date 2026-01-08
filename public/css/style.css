@@ -3691,3 +3691,8 @@ select:focus-visible {
 .dot:nth-child(1) { animation-delay: -0.32s; }
 .dot:nth-child(2) { animation-delay: -0.16s; }
 
+
+.floating-card{
+    z-index: 999;
+    box-shadow:4px 8px #00000021;
+}
