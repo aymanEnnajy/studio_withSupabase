@@ -348,7 +348,7 @@ ol {
     visibility: hidden;
     transform: translateY(-10px);
     transition: all var(--transition-base);
-        display: contents;
+    display: contents;
 }
 
 .profile-dropdown:hover .dropdown-menu,
@@ -1612,6 +1612,17 @@ section {
     }
 }
 
+@media (max-width: 640px) {
+    .studios-listing-wrapper {
+        display: block;
+    }
+
+    .studios-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
 /* Filters Sidebar */
 .filters-sidebar {
     background: var(--white);
@@ -1629,12 +1640,15 @@ section {
         top: 0;
         left: 0;
         width: 100%;
-        max-width: 400px;
+        max-width: 350px;
         height: 100vh;
         overflow-y: auto;
-        z-index: 1001;
+        z-index: 10001;
+        /* Higher than chat to be accessible */
         transform: translateX(-100%);
         transition: transform var(--transition-base);
+        background: white;
+        padding-top: 1rem;
     }
 
     .filters-sidebar.active {
@@ -3420,7 +3434,7 @@ select:focus-visible {
 }
 
 .studios-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 }
 
 .studios-list {
@@ -3529,6 +3543,7 @@ select:focus-visible {
     color: white;
     transform: translateY(-2px);
 }
+
 /* === Chat Page === */
 .chat-section {
     padding: 120px 0 80px;
@@ -3546,7 +3561,7 @@ select:focus-visible {
     display: flex;
     flex-direction: column;
     height: 600px;
-    border: 1px solid rgba(0,0,0,0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .chat-header {
@@ -3560,7 +3575,7 @@ select:focus-visible {
 
 .chat-header-icon {
     font-size: 24px;
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -3602,8 +3617,15 @@ select:focus-visible {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .message.bot {
@@ -3612,7 +3634,7 @@ select:focus-visible {
     align-self: flex-start;
     border-bottom-left-radius: 5px;
     box-shadow: var(--shadow-sm);
-    border: 1px solid rgba(0,0,0,0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .message.user {
@@ -3689,14 +3711,20 @@ select:focus-visible {
     animation: bounce 1.4s infinite ease-in-out both;
 }
 
-.dot:nth-child(1) { animation-delay: -0.32s; }
-.dot:nth-child(2) { animation-delay: -0.16s; }
-
-
-.floating-card{
-    z-index: 999;
-    box-shadow:4px 8px #00000021;
+.dot:nth-child(1) {
+    animation-delay: -0.32s;
 }
-.navbar> .container{
+
+.dot:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+
+.floating-card {
+    z-index: 999;
+    box-shadow: 4px 8px #00000021;
+}
+
+.navbar>.container {
     padding-top: 10px;
 }
