@@ -91,13 +91,45 @@
                 <div class="dashboard-grid" id="myStudiosGrid">
                     <!-- Loading state -->
                     <div class="loading-placeholder">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Chargement de vos studios...</span>
                     </div>
-                    </footer>
+                </div>
+            </section>
+        </div>
+    </main>
 
-                    <!-- Custom JS -->
-                    <script src="js/main.js"></script>
-                    <script src="js/dashboard.js"></script>
-                    <script src="js/chat-widget.js"></script>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fas fa-trash-alt"></i>
+            </div>
+            <h3 class="modal-title">Confirmer la suppression</h3>
+            <p class="modal-body">
+                Êtes-vous sûr de vouloir supprimer ce studio ?<br>
+                Cette action est irréversible.
+            </p>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="cancelDeleteBtn">Annuler</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 PhotoStudio Hub. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom JS -->
+    <script src="js/main.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/chat-widget.js"></script>
 </body>
 
 </html>
