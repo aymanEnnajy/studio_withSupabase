@@ -259,23 +259,54 @@ function initStudioActions() {
     }
 
     if (deleteBtn) {
-        deleteBtn.addEventListener('click', async () => {
-            if (confirm('Êtes-vous sûr de vouloir supprimer ce studio ?')) {
+        deleteBtn.addEventListener('click', () => {
+            const modal = document.getElementById('deleteModal');
+            if (modal) modal.classList.add('active');
+        });
+    }
+
+    // Modal Logic
+    const modal = document.getElementById('deleteModal');
+    const cancelBtn = document.getElementById('cancelDeleteBtn');
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+
+    if (modal) {
+        // Close on cancel
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                modal.classList.remove('active');
+            });
+        }
+
+        // Close on click outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+
+        // Confirm Action
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', async () => {
                 const urlParams = new URLSearchParams(window.location.search);
                 const studioId = urlParams.get('id');
 
                 try {
+                    confirmBtn.classList.add('loading'); // Optional styling support
                     await API.delete(`/items/${studioId}`);
                     window.showNotification('Studio supprimé avec succès', 'success');
+                    modal.classList.remove('active');
                     setTimeout(() => {
                         window.location.href = 'studios.html';
                     }, 1500);
                 } catch (error) {
                     console.error('Delete failed:', error);
                     window.showNotification(error.message || 'Erreur lors de la suppression', 'error');
+                } finally {
+                    confirmBtn.classList.remove('loading');
                 }
-            }
-        });
+            });
+        }
     }
 }
 

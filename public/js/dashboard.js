@@ -82,19 +82,75 @@ async function loadMyStudios() {
     }
 }
 
-async function deleteStudio(id) {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce studio ? Cette action est irréversible.')) {
-        return;
-    }
+// Make delete function global
+window.deleteStudio = openDeleteModal;
 
-    try {
-        await API.delete(`/items/${id}`);
-        window.showNotification('Studio supprimé avec succès', 'success');
-        loadMyStudios(); // Reload list
-    } catch (error) {
-        window.showNotification(error.message, 'error');
+let studioIdToDelete = null;
+
+function openDeleteModal(id) {
+    studioIdToDelete = id;
+    const modal = document.getElementById('deleteModal');
+    if (modal) {
+        modal.classList.add('active');
     }
 }
 
-// Make delete function global
-window.deleteStudio = deleteStudio;
+function closeDeleteModal() {
+    studioIdToDelete = null;
+    const modal = document.getElementById('deleteModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+// Initialize Modal Events
+document.addEventListener('DOMContentLoaded', () => {
+    const cancelBtn = document.getElementById('cancelDeleteBtn');
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    const modal = document.getElementById('deleteModal');
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', closeDeleteModal);
+    }
+
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', async () => {
+            if (studioIdToDelete) {
+                await performDelete(studioIdToDelete);
+                closeDeleteModal();
+            }
+        });
+    }
+
+    // Close on click outside
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeDeleteModal();
+            }
+        });
+    }
+});
+
+async function performDelete(id) {
+    try {
+        await API.delete(`/items/${id}`);
+        // Remove card from UI immediately if possible or reload
+        const card = document.querySelector(`button[onclick="deleteStudio(${id})"]`).closest('.studio-card');
+        if (card) {
+            // Animate removal
+            card.style.transition = 'all 0.3s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                loadMyStudios(); // Reload list to ensure correct count and state
+            }, 300);
+        } else {
+            loadMyStudios();
+        }
+        window.showNotification('Studio supprimé avec succès', 'success');
+    } catch (error) {
+        console.error('Delete failed:', error);
+        window.showNotification(error.message || 'Erreur lors de la suppression', 'error');
+    }
+}
